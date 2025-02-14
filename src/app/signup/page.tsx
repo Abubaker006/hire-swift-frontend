@@ -1,23 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { Input, Select, Spin, Form } from "antd";
+import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useFormik, FormikHelpers } from "formik";
+import { FormikHelpers, Formik, Form } from "formik";
 import { signUpPageValidationSchema } from "@/utils/schema";
 import LogoImage from "../../../public/assets/logo/logo.png";
 import LaptopImage from "../../../public/assets/images/LaptopImage.svg";
 import Link from "next/link";
+import CustomInput from "@/components/Inputs/customInput";
+import CustomSelect from "@/components/Inputs/customSelect";
 
 const SignUp = () => {
-    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = (
         values: {
             firstName: string;
             lastName: string;
             email: string;
-            contact: string;
+            contactNumber: string;
             password: string;
             confirmPassword: string;
             role: string;
@@ -26,33 +27,18 @@ const SignUp = () => {
             firstName: string;
             lastName: string;
             email: string;
-            contact: string;
+            contactNumber: string;
             password: string;
             confirmPassword: string;
             role: string;
         }>
     ) => {
-        setIsLoading(true);
         console.log(values);
         actions.resetForm();
         setTimeout(() => {
-            setIsLoading(false);
+            console.log("Form submitted successfully!");
         }, 3000);
     };
-
-    const formik = useFormik({
-        initialValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            contact: "",
-            password: "",
-            confirmPassword: "",
-            role: "",
-        },
-        validationSchema: signUpPageValidationSchema,
-        onSubmit,
-    });
 
     return (
         <div className="min-h-screen flex w-full">
@@ -65,216 +51,87 @@ const SignUp = () => {
                     Sign up to start your journey with HireSwift.
                 </p>
 
-                <Form
-                    layout="vertical"
-                    onFinish={formik.handleSubmit}
-                    className="w-full max-w-md  mt-8"
+                <Formik
+                    initialValues={{
+                        firstName: "",
+                        lastName: "",
+                        email: "",
+                        contactNumber: "",
+                        password: "",
+                        confirmPassword: "",
+                        role: "",
+                    }}
+                    onSubmit={onSubmit}
+                    validationSchema={signUpPageValidationSchema}
                 >
-                    <div className="flex gap-1">
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Firstname
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.firstName && formik.errors.firstName
-                                    ? "error"
-                                    : ""
-                            }
-                            help={
-                                formik.touched.firstName && formik.errors.firstName
-                                    ? formik.errors.firstName
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input
-                                name="firstName"
-                                placeholder="First Name"
-                                value={formik.values.firstName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
+                    {({ isSubmitting }) => (
+                        <Form className="w-full">
+                            {/* Grid Layout */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-3 py-3">
+                                <CustomInput
+                                    label="First Name"
+                                    name="firstName"
+                                    type="text"
+                                    placeholder="Enter your first name"
+                                />
+                                <CustomInput
+                                    label="Last Name"
+                                    name="lastName"
+                                    type="text"
+                                    placeholder="Enter your last name"
+                                />
+                                <CustomInput
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                />
+                                <CustomInput
+                                    label="Contact Number"
+                                    name="contactNumber"
+                                    type="text"
+                                    placeholder="Enter your Contact number"
+                                />
+                                <CustomInput
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Enter your password"
+                                />
+                                <CustomInput
+                                    label="Confirm Password"
+                                    name="confirmPassword"
+                                    type="password"
+                                    placeholder="Confirm your password"
+                                />
+                                <CustomSelect
+                                    label="Role"
+                                    name="role"
+                                >
+                                    <option value="">Select your role</option>
+                                    <option value="Recruiter">Recruiter</option>
+                                    <option value="Candidate">Candidate {"(User)"}</option>
+                                </CustomSelect>
+                            </div>
 
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Lastname
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.lastName && formik.errors.lastName ? "error" : ""
-                            }
-                            help={
-                                formik.touched.lastName && formik.errors.lastName
-                                    ? formik.errors.lastName
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input
-                                name="lastName"
-                                placeholder="Last Name"
-                                value={formik.values.lastName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
-                    </div>
+                            <button
+                                type="submit"
+                                className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 shadow-lg text-lg mt-4"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <Spin
+                                        indicator={<LoadingOutlined style={{ color: "black" }} />}
+                                        size="large"
+                                    />
+                                ) : (
+                                    "Sign up"
+                                )}
+                            </button>
+                        </Form>
+                    )}
+                </Formik>
 
-                    <div className="flex gap-1">
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Email
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.email && formik.errors.email ? "error" : ""
-                            }
-                            help={
-                                formik.touched.email && formik.errors.email
-                                    ? formik.errors.email
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input
-                                name="email"
-                                placeholder="Email"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Contact
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.contact && formik.errors.contact ? "error" : ""
-                            }
-                            help={
-                                formik.touched.contact && formik.errors.contact
-                                    ? formik.errors.contact
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input
-                                name="contact"
-                                placeholder="Contact Number"
-                                value={formik.values.contact}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
-                    </div>
-
-                    <div className="flex gap-1">
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Password
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.password && formik.errors.password ? "error" : ""
-                            }
-                            help={
-                                formik.touched.password && formik.errors.password
-                                    ? formik.errors.password
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input.Password
-                                name="password"
-                                placeholder="Password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={
-                                <span className="text-gray-200 font-semibold text-l">
-                                    Confirm Password
-                                </span>
-                            }
-                            validateStatus={
-                                formik.touched.confirmPassword && formik.errors.confirmPassword
-                                    ? "error"
-                                    : ""
-                            }
-                            help={
-                                formik.touched.confirmPassword && formik.errors.confirmPassword
-                                    ? formik.errors.confirmPassword
-                                    : ""
-                            }
-                            className="w-1/2"
-                        >
-                            <Input.Password
-                                name="confirmPassword"
-                                placeholder="Confirm Password"
-                                value={formik.values.confirmPassword}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="w-full px-4 py-3 bg-white text-black rounded-lg"
-                            />
-                        </Form.Item>
-                    </div>
-
-                    <Form.Item
-                        label={
-                            <span className="text-gray-200 font-semibold text-l">Role</span>
-                        }
-                        validateStatus={
-                            formik.touched.role && formik.errors.role ? "error" : ""
-                        }
-                        help={
-                            formik.touched.role && formik.errors.role
-                                ? formik.errors.role
-                                : ""
-                        }
-                    >
-                        <Select
-                            placeholder="Select your role"
-                            value={formik.values.role || undefined}
-                            onChange={(value) => formik.setFieldValue("role", value)}
-                            onBlur={() => formik.setFieldTouched("role", true)}
-                            className="w-full h-12"
-                        >
-                            <Select.Option value="company">Works in a company</Select.Option>
-                            <Select.Option value="student">Student</Select.Option>
-                        </Select>
-                    </Form.Item>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 shadow-lg text-lg"
-                    >
-                        {isLoading ? (
-                            <Spin
-                                indicator={<LoadingOutlined style={{ color: "black" }} />}
-                                size="large"
-                            />
-                        ) : (
-                            "Sign Up"
-                        )}
-                    </button>
-                </Form>
 
                 <Link
                     href={"/login"}

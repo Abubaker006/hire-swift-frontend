@@ -9,9 +9,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: #0a0a0a;
-    --foreground: #ededed; */
-    /* just added these two colors to make it work in light mode for now will implement dark mode later */
     --background: #ffffff;
     --foreground: #171717;
   }

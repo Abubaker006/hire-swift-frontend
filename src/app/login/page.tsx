@@ -1,37 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import LogoImage from "../../../public/assets/logo/logo.png";
 import Image from "next/image";
-import { Form, Input, Spin } from "antd";
+import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useFormik, FormikHelpers } from "formik";
+import { Formik, FormikHelpers, Form } from "formik";
 import { loginPageValidationSchema } from "@/utils/schema";
 import LaptopImage from "../../../public/assets/images/LaptopImage.svg";
 import Link from "next/link";
+import CustomInput from "@/components/Inputs/customInput";
 
 const Login = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = (
     values: { email: string; password: string },
     actions: FormikHelpers<{ email: string; password: string }>
   ) => {
-    setIsLoading(true);
     console.log(values);
     actions.resetForm();
     setTimeout(() => {
-      setIsLoading(false);
+      console.log("Login Success");
     }, 3000);
   };
 
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validationSchema: loginPageValidationSchema,
-    onSubmit,
-  });
 
   return (
     <div className="min-h-screen flex w-full">
@@ -44,82 +35,53 @@ const Login = () => {
         <p className="text-sm text-gray-400 text-center mt-3 max-w-xs">
           Login to continue your journey with HireSwift.
         </p>
-
-        <Form
-          layout="vertical"
-          onFinish={formik.handleSubmit}
-          className="w-full max-w-md space-y-6 mt-8"
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+          }}
+          onSubmit={onSubmit}
+          validationSchema={loginPageValidationSchema}
         >
-          <Form.Item
-            label={
-              <span className="text-gray-200 font-semibold text-l">Email</span>
-            }
-            validateStatus={
-              formik.touched.email && formik.errors.email ? "error" : ""
-            }
-            help={
-              formik.touched.email && formik.errors.email
-                ? formik.errors.email
-                : ""
-            }
-          >
-            <Input
-              name="email"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.email}
-              placeholder="Enter your email."
-              className={`w-full px-4 py-3 bg-white text-black placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ${
-                formik.touched.email && formik.errors.email
-                  ? "border border-red-500"
-                  : "border-none"
-              }`}
-            />
-          </Form.Item>
+          {({ isSubmitting }) => (
+            <Form className="w-full flex flex-col items-center my-3">
+              <div className="w-1/2 py-3 my-1">
+                <div className="my-2">
+                  <CustomInput
+                    label="Email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div className="my-2">
+                  <CustomInput
+                    label="Password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                  /></div>
+              </div>
+              <button
+                type="submit"
+                className="w-1/2 bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 shadow-md text-l"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <Spin
+                    indicator={<LoadingOutlined style={{ color: "black" }} />}
+                    size="large"
+                  />
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </Form>
+          )}
 
-          <Form.Item
-            label={
-              <span className="text-gray-200 font-semibold text-l">
-                Password
-              </span>
-            }
-            validateStatus={
-              formik.touched.password && formik.errors.password ? "error" : ""
-            }
-            help={
-              formik.touched.password && formik.errors.password
-                ? formik.errors.password
-                : ""
-            }
-          >
-            <Input.Password
-              name="password"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.password}
-              placeholder="Enter your password."
-              className={`w-full px-4 py-3 bg-white text-black placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ${
-                formik.touched.email && formik.errors.email
-                  ? "border border-red-500"
-                  : "border-none"
-              }`}
-            />
-          </Form.Item>
 
-          <button
-            type="submit"
-            className="w-full bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 shadow-md text-l"
-          >
-            {isLoading ? (
-              <Spin
-                indicator={<LoadingOutlined style={{ color: "black" }} />}
-                size="large"
-              />
-            ) : (
-              "Login"
-            )}
-          </button>
-        </Form>
+        </Formik>
+
 
         <Link href={"/signup"}
           className="text-gray-300 hover:text-white text-sm mt-5 transition duration-200"
