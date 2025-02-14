@@ -129,7 +129,7 @@ const Login = () => {
       </div>
 
       {/* Right Side */}
-      <div className="w-1/2 hidden md:flex flex-col items-center justify-center bg-gray-100 p-12">
+      <div className="w-1/2 hidden md:flex flex-col items-center justify-center bg-[#DBEAFE] p-12">
         <h1 className="text-5xl font-bold text-gray-800 text-center mb-5">
           #1 Job Hunting and Talent Recruitment Platform.
         </h1>

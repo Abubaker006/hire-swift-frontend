@@ -3,8 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import LogoImage from "../../../public/assets/Logo/logo.png";
 import InternetIcon from "../../../public/assets/icons/internetIcon.svg";
-// import HomePageMainImage from "../../../public/assets/images/homePageImage.svg";
-// import DashboardImage from "../../../public/assets/images/dashboard.svg";
 import LaptopImage from "../../../public/assets/images/LaptopImage.svg";
 
 import LoginSign from "./login-sign";
@@ -54,7 +52,7 @@ const HomePage = () => {
         </h2>
 
         <button className="mt-6 bg-black text-white text-lg px-6 md:px-8 py-3 rounded-xl font-medium shadow-lg hover:bg-gray-900">
-          Get Started
+          <Link href={"/signup"}> Get Started</Link>
         </button>
 
         <div className="relative mt-10 flex justify-center">
@@ -63,7 +61,7 @@ const HomePage = () => {
             alt="Laptop Image"
             className="w-full md:w-3/5"
           />
-{/* 
+          {/* 
           <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
             <Image
               src={DashboardImage}
