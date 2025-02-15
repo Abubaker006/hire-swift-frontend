@@ -9,18 +9,39 @@ import { loginPageValidationSchema } from "@/utils/schema";
 import LaptopImage from "../../../public/assets/images/LaptopImage.svg";
 import Link from "next/link";
 import CustomInput from "@/components/Inputs/customInput";
+import { toast } from "react-toastify";
+import { loginAPI } from "@/apiServices/authAPI";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
 
-  const onSubmit = (
+  const router = useRouter();
+
+  const onSubmit = async (
     values: { email: string; password: string },
     actions: FormikHelpers<{ email: string; password: string }>
   ) => {
-    console.log(values);
-    actions.resetForm();
-    setTimeout(() => {
-      console.log("Login Success");
-    }, 3000);
+    try {
+      console.log(values);
+      const data = {
+        email: values.email,
+        password: values.password
+      }
+      const response = await loginAPI(data);
+
+      actions.resetForm();
+      if (!response) {
+        toast("An Error Occured, Please try again later");
+        throw new Error("An Error Occured, Please try again later, while logging in");
+      }
+
+      toast("Login Successfull...");
+      Cookies.set("access_token", response.token, { expires: 1 });
+      router.replace("/dashboard");
+    } catch (error) {
+      console.error("Error In Logging In:", error);
+    }
   };
 
 
@@ -69,7 +90,7 @@ const Login = () => {
               >
                 {isSubmitting ? (
                   <Spin
-                    indicator={<LoadingOutlined style={{ color: "black" }} />}
+                    indicator={<LoadingOutlined style={{ color: "black" }} spin />}
                     size="large"
                   />
                 ) : (

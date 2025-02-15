@@ -10,10 +10,15 @@ import LaptopImage from "../../../public/assets/images/LaptopImage.svg";
 import Link from "next/link";
 import CustomInput from "@/components/Inputs/customInput";
 import CustomSelect from "@/components/Inputs/customSelect";
+import { toast } from "react-toastify";
+import { signupAPI } from "@/apiServices/authAPI";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
+    const router = useRouter();
 
-    const onSubmit = (
+    const onSubmit = async (
         values: {
             firstName: string;
             lastName: string;
@@ -33,11 +38,34 @@ const SignUp = () => {
             role: string;
         }>
     ) => {
+
         console.log(values);
+        if (values.confirmPassword !== values.password) {
+            toast.error("Please provide matching passwords");
+            return;
+        }
+        if (values.role === "recruiter") {
+            console.log("Recruiter Login");
+            //here we will call a custom hook to verify if the user is valid recruiter or not from a valid company.
+            //future functionality.
+        }
+
+        const data = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+            contactNumber: values.contactNumber,
+            role: values.role
+        }
+        const response = await signupAPI(data);
+        if (!response) {
+            toast.error("An error occured, Please try again")
+            throw new Error("Error at signing up.");
+        }
         actions.resetForm();
-        setTimeout(() => {
-            console.log("Form submitted successfully!");
-        }, 3000);
+        Cookies.set("access_token", response.token, { expires: 1 });
+        router.replace("/dashboard");
     };
 
     return (
@@ -108,9 +136,9 @@ const SignUp = () => {
                                     label="Role"
                                     name="role"
                                 >
-                                    <option value="">Select your role</option>
-                                    <option value="Recruiter">Recruiter</option>
-                                    <option value="Candidate">Candidate {"(User)"}</option>
+                                    <option value="" >Select your role</option>
+                                    <option value="recruiter">Recruiter</option>
+                                    <option value="candidate">Candidate {"(User)"}</option>
                                 </CustomSelect>
                             </div>
 
