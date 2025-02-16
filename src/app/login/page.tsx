@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import LogoImage from "../../../public/assets/logo/logo.png";
+import LogoImage from "../../../public/assets/logo/hire-swift-white.svg";
 import Image from "next/image";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -13,9 +13,9 @@ import { toast } from "react-toastify";
 import { loginAPI } from "@/apiServices/authAPI";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import BackButton from "@/components/miscellenious/BackButton";
 
 const Login = () => {
-
   const router = useRouter();
 
   const onSubmit = async (
@@ -26,14 +26,16 @@ const Login = () => {
       console.log(values);
       const data = {
         email: values.email,
-        password: values.password
-      }
+        password: values.password,
+      };
       const response = await loginAPI(data);
 
       actions.resetForm();
       if (!response) {
         toast("An Error Occured, Please try again later");
-        throw new Error("An Error Occured, Please try again later, while logging in");
+        throw new Error(
+          "An Error Occured, Please try again later, while logging in"
+        );
       }
 
       toast("Login Successfull...");
@@ -44,12 +46,16 @@ const Login = () => {
     }
   };
 
-
   return (
-    <div className="min-h-screen flex w-full">
+    <div className="min-h-screen flex w-full relative">
+      <div className="absolute top-6 left-6 z-50">
+        {" "}
+        <BackButton route={"/"} />
+      </div>
+
       {/* Left Side */}
-      <div className="w-full md:w-1/2 bg-[#1E1E1E] text-white flex flex-col items-center justify-center p-14 shadow-lg">
-        <Image src={LogoImage} alt="HireSwift Logo" width={170} height={75} />
+      <div className="w-full md:w-1/2 bg-[#000] text-white flex flex-col items-center justify-center p-14 shadow-lg">
+        <Image src={LogoImage} alt="HireSwift Logo" width={180} height={75} />
         <h1 className="text-5xl font-bold mt-6 leading-tight text-center">
           Welcome Back!
         </h1>
@@ -81,16 +87,19 @@ const Login = () => {
                     name="password"
                     type="password"
                     placeholder="Enter your password"
-                  /></div>
+                  />
+                </div>
               </div>
               <button
                 type="submit"
-                className="w-1/2 bg-white text-black font-semibold py-4 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 shadow-md text-l"
+                className="w-1/2 bg-white text-black font-semibold py-4 rounded-lg hover:bg-[#5E17EB] active:bg-[#5E17EB] hover:text-[#fff] transition-all duration-200 shadow-md text-l"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <Spin
-                    indicator={<LoadingOutlined style={{ color: "black" }} spin />}
+                    indicator={
+                      <LoadingOutlined style={{ color: "black" }} spin />
+                    }
                     size="large"
                   />
                 ) : (
@@ -99,20 +108,21 @@ const Login = () => {
               </button>
             </Form>
           )}
-
-
         </Formik>
 
-
-        <Link href={"/signup"}
-          className="text-gray-300 hover:text-white text-sm mt-5 transition duration-200"
+        <Link
+          href={"/signup"}
+          className="text-white hover:text-white text-sm mt-5 transition duration-200"
         >
-          Don&apos;t have an account?{" "}<span className="font-semibold underline">Signup</span>
+          Don&apos;t have an account?{" "}
+          <span className="font-semibold underline text-[#5E17EB] hover:text-white transition-all duration-300">
+            Signup
+          </span>
         </Link>
       </div>
 
       {/* Right Side */}
-      <div className="w-1/2 hidden md:flex flex-col items-center justify-center bg-[#DBEAFE] p-12">
+      <div className="w-1/2 hidden md:flex flex-col items-center justify-center bg-[#] p-12">
         <h1 className="text-5xl font-bold text-gray-800 text-center mb-5">
           #1 Job Hunting and Talent Recruitment Platform.
         </h1>
@@ -121,7 +131,7 @@ const Login = () => {
           alt="Dashboard Preview"
           width={450}
           height={280}
-          className="grayscale -translate-x-2 transition-transform duration-300 [transform:rotateX(15deg)]"
+          className=" -translate-x-2 transition-transform duration-300 [transform:rotateX(15deg)]"
         />
       </div>
     </div>

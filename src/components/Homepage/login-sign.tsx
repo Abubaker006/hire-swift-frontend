@@ -14,11 +14,11 @@ const LoginSign = () => {
   };
   return (
     <>
-      <button className="text-gray-700 font-medium" onClick={handleLoginClick}>
+      <button className="text-white font-medium hover:text-[#5E17EB] transition-all duration-500" onClick={handleLoginClick}>
         Login
       </button>
       <button
-        className="bg-blue-600 text-white px-4 md:px-5 py-2 rounded-lg font-medium hover:bg-blue-700"
+        className="bg-[#fff] text-black px-4 md:px-5 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-[#5E17EB] hover:text-white"
         onClick={handleSignUpClick}
       >
         Get Started

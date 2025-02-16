@@ -24,7 +24,7 @@ const CustomInput: FC<ICustomInputProps> = ({ label, type, ...props }) => {
           {...props}
           type={isPassword && !showPassword ? "password" : "text"}
           className={`w-full border rounded-md p-3 pr-10 outline-none focus:ring-2 transition text-black
-          ${meta.touched && meta.error ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-400"}`}
+          ${meta.touched && meta.error ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-[#5E17EB]"}`}
           {...(isPassword && {
             onCopy: (e) => e.preventDefault(),
             onPaste: (e) => e.preventDefault(),

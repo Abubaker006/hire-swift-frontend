@@ -1,25 +1,18 @@
 "use client";
 import React from "react";
 import CandidateDashboard from "@/components/Dashboard/CandidateDashboard";
-import useAuth from "@/hooks/customHooks/useAuth";
-import { MoonLoader } from "react-spinners";
 import RecruiterDashboard from "@/components/Dashboard/RecruiterDashboard";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/hooks/redux/store";
 const Dashboard = () => {
-  const { isChecking, role } = useAuth(["recruiter", "candidate"]);
 
-  if (isChecking || role === null) {
-    return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-white">
-        <MoonLoader size={60} color={"#2980b9"} loading={true} />
-        <p className="my-10">Loading...</p>
-      </div>
-    );
-  }
+  const user = useSelector((state:RootState)=>state.auth.user);
+  
+ 
   return (
     <>
-      {role === "recruiter" && (<RecruiterDashboard />)}
-      {role === "candidate" && (<CandidateDashboard />)}
+      {user?.role === "recruiter" && (<RecruiterDashboard />)}
+      {user?.role === "candidate" && (<CandidateDashboard />)}
     </>
   );
 };
