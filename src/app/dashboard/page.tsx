@@ -20,7 +20,6 @@ const Dashboard = () => {
     <>
       {role === "recruiter" && (<RecruiterDashboard />)}
       {role === "candidate" && (<CandidateDashboard />)}
-
     </>
   );
 };
