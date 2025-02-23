@@ -1,20 +1,17 @@
-"use client";
+"use client"; 
 import React from "react";
-import ReduxProvider from "@/hooks/Provider/ReduxProvider";
-import Loader from "@/utils/loader";
-import DashbaordLayoutWrapper from "./dashboardLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function DashboardLayout({
+
+export default function SignupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ReduxProvider>
-      <DashbaordLayoutWrapper>
-        <Loader />
+    <html lang="en">
+      <body>
         {children}
         <ToastContainer
           position="top-right" 
@@ -27,7 +24,7 @@ export default function DashboardLayout({
           draggable
           pauseOnHover
         />
-      </DashbaordLayoutWrapper>
-    </ReduxProvider>
+      </body>
+    </html>
   );
 }

@@ -65,7 +65,6 @@ const useAuth = (allowedRoles: string[]) => {
             })
           );
           setRole(response.user.token || decodedToken.role);
-          toast.success("Welcome to dashboard");
         } catch (error) {
           console.error("Error fetching user data:", error);
           toast.error("Error fetching user information");

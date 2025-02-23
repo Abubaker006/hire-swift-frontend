@@ -38,33 +38,30 @@ const SignUp = () => {
       role: string;
     }>
   ) => {
-    console.log(values);
-    if (values.confirmPassword !== values.password) {
-      toast.error("Please provide matching passwords");
-      return;
-    }
-    if (values.role === "recruiter") {
-      console.log("Recruiter Login");
-      //here we will call a custom hook to verify if the user is valid recruiter or not from a valid company.
-      //future functionality.
-    }
+    try {
+      if (values.role === "recruiter") {
+        console.log("Recruiter Login");
+        //here we will call a custom hook to verify if the user is valid recruiter or not from a valid company.
+        //future functionality.
+      }
 
-    const data = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      password: values.password,
-      contactNumber: values.contactNumber,
-      role: values.role,
-    };
-    const response = await signupAPI(data);
-    if (!response) {
-      toast.error("An error occured, Please try again");
-      throw new Error("Error at signing up.");
+      const data = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        contactNumber: values.contactNumber,
+        role: values.role,
+      };
+      const response = await signupAPI(data);
+
+      actions.resetForm();
+      Cookies.set("access_token", response.token, { expires: 1 });
+      router.replace("/dashboard");
+    } catch (error) {
+      toast.error("An Error Occurred, Please try again.");
+      console.error("An error occured", error);
     }
-    actions.resetForm();
-    Cookies.set("access_token", response.token, { expires: 1 });
-    router.replace("/dashboard");
   };
 
   return (

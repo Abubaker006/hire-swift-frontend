@@ -42,6 +42,7 @@ const Login = () => {
       Cookies.set("access_token", response.token, { expires: 1 });
       router.replace("/dashboard");
     } catch (error) {
+      toast("Invalid Credentials");
       console.error("Error In Logging In:", error);
     }
   };
