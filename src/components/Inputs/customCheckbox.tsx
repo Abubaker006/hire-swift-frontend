@@ -16,7 +16,7 @@ const CustomCheckbox: FC<ICustomCheckboxProps> = ({ label, ...props }) => {
         {...props}
         type="checkbox"
         className={` w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-md 
-         focus:ring-blue-500 focus:ring-2 ${meta.touched && meta.error ? "border-red-500 focus:ring-red-500" : ""}`}
+         focus:focus:ring-[#5E17EB] focus:ring-2 ${meta.touched && meta.error ? "border-red-500 focus:ring-red-500" : ""}`}
       />
       <label htmlFor={props.id || props.name}>{label}</label>
 
