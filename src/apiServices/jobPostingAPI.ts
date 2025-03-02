@@ -1,7 +1,5 @@
 import nextConfig from "../../next.config";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { toast } from "react-toastify";
 const API_URL = nextConfig.env?.NEXT_PUBLIC_API_URL ?? "";
 
 interface JobPosting {

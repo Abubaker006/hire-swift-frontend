@@ -3,11 +3,9 @@ import React from "react";
 import { Formik } from "formik";
 import CustomInput from "@/components/Inputs/customInput";
 import CustomSelect from "@/components/Inputs/customSelect";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { JobPostFormValidationSchema } from "@/utils/schema";
+import CustomDatePicker from "@/components/Inputs/customDatePicker";
 
 const PostJob = () => {
   return (
@@ -47,7 +45,7 @@ const PostJob = () => {
           console.log(transformedValues);
         }}
       >
-        {({ handleChange, handleSubmit, values, setFieldValue }) => (
+        {({ handleChange, handleSubmit }) => (
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
             <CustomInput
               label="Job Title"
@@ -149,29 +147,14 @@ const PostJob = () => {
               <option value="salary">Salary</option>
               <option value="DOE">DOE</option>
             </CustomSelect>
-            <div className="relative">
-              <DatePicker
-                selected={values.startDate}
-                onChange={(date) => setFieldValue("startDate", date)}
-                placeholderText="Select start date"
-                className="w-full px-4 py-3 border rounded-lg"
-              />
-              <FontAwesomeIcon
-                icon={faCalendarAlt}
-                className="absolute right-4 top-4 text-gray-500"
-              />
+            <div className="flex flex-col w-full">
+              <CustomDatePicker name="startDate" label="Starting Date" />
             </div>
 
-            <div className="relative">
-              <DatePicker
-                selected={values.applicationDeadLine}
-                onChange={(date) => setFieldValue("applicationDeadLine", date)}
-                placeholderText="Select application deadline"
-                className="w-full px-4 py-3 border rounded-lg  pr-10"
-              />
-              <FontAwesomeIcon
-                icon={faCalendarAlt}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            <div className="flex flex-col w-full">
+              <CustomDatePicker
+                name="applicationDeadLine"
+                label="Application Deadline"
               />
             </div>
             <CustomInput
