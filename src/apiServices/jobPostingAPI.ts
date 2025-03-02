@@ -27,11 +27,15 @@ interface ApiResponse<T> {
 
 export const createJobPosting = async (
   jobData: CreateJobPostingRequest,
-  token: string
+  token: string | null
 ): Promise<ApiResponse<JobPosting>> => {
-  const response = await axios.post(API_URL, jobData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await axios.post(
+    `${API_URL}/v1/recruiter/job-postings`,
+    jobData,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   return response.data;
 };
 

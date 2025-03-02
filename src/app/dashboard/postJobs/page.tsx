@@ -6,8 +6,34 @@ import CustomSelect from "@/components/Inputs/customSelect";
 import "react-datepicker/dist/react-datepicker.css";
 import { JobPostFormValidationSchema } from "@/utils/schema";
 import CustomDatePicker from "@/components/Inputs/customDatePicker";
+import { createJobPosting } from "@/apiServices/jobPostingAPI";
+import { useSelector } from "react-redux";
+import { RootState } from "@/hooks/redux/store";
+import { toast } from "react-toastify";
 
 const PostJob = () => {
+  const userToken = useSelector((state: RootState) => state.auth.token);
+
+  const handleOnSubmit = async (values: any, actions: any) => {
+    try {
+      const transformedValues = {
+        ...values,
+        techStack: values.techStack.split(",").map((tech: any) => tech.trim()),
+        compensation: {
+          min: Number(values.compensationMin),
+          max: Number(values.compensationMax),
+          type: values.compensationType,
+        },
+      };
+      await createJobPosting(transformedValues, userToken);
+      toast.success("Job Post Created Successfully.");
+      actions.resetForm();
+    } catch (error) {
+      console.error("An Error Occured while creating job post:", error);
+      toast.error("Something went wrong.");
+      actions.resetForm();
+    }
+  };
   return (
     <div className="min-h-screen  p-8">
       <h1 className="text-4xl font-bold mb-8 text-gray-800">Post a Job</h1>
@@ -32,18 +58,7 @@ const PostJob = () => {
           contactEmail: "",
         }}
         validationSchema={JobPostFormValidationSchema}
-        onSubmit={(values) => {
-          const transformedValues = {
-            ...values,
-            techStack: values.techStack.split(",").map((tech) => tech.trim()),
-            compensation: {
-              min: Number(values.compensationMin),
-              max: Number(values.compensationMax),
-              type: values.compensationType,
-            },
-          };
-          console.log(transformedValues);
-        }}
+        onSubmit={handleOnSubmit}
       >
         {({ handleChange, handleSubmit }) => (
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
