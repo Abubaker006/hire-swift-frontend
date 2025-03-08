@@ -121,7 +121,6 @@ const CreatedJobPostings = () => {
         userToken,
         "published,draft,closed"
       );
-      console.log("response", response);
       setRowData(response);
     } catch (error) {
       console.error("Error occurred while fetching job postings", error);
@@ -130,7 +129,7 @@ const CreatedJobPostings = () => {
   };
   useEffect(() => {
     fetchJobPostings();
-  }, []);
+  });
 
   const handleDetail = async (id: string) => {
     try {
