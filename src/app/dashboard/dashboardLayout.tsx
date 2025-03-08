@@ -10,11 +10,13 @@ import { logoutSuccess } from "@/hooks/slices/authSlice";
 import { showLoader, hideLoader } from "@/hooks/slices/loaderSlice";
 import Link from "next/link";
 import LogoImage from "../../../public/assets/Logo/hire-swift-white.svg";
-import LocationIcon from "../../../public/assets/icons/locationIcon.svg";
 import GenericAvatar from "../../../public/assets/icons/Generic-avatar.svg";
 import Filters from "@/components/Dashboard/Filters";
 import useAuth from "@/hooks/customHooks/useAuth";
 import LoaderImage from "../../../public/assets/loader/hire swift .gif";
+import LocationComponent from "@/components/LocationComponent/location";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 export default function DashbaordLayoutWrapper({
   children,
@@ -46,7 +48,10 @@ export default function DashbaordLayoutWrapper({
     role === "recruiter"
       ? [
           { href: "/dashboard/postJobs", label: "Post Jobs" },
-          { href: "/dashboard/results", label: "Schedule Interviews" },
+          {
+            href: "/dashboard/created-job-postings",
+            label: "View Job Postings",
+          },
           { href: "/dashboard/statistics", label: "Statistics" },
           { href: "/dashboard/faqs", label: "FAQ" },
         ]
@@ -65,11 +70,10 @@ export default function DashbaordLayoutWrapper({
     );
   }
 
-  
   return (
     <>
       <div className="min-h-screen flex flex-col bg-[#fff] text-gray-900">
-        <header className="flex justify-between items-center bg-black text-white p-4">
+        <header className="sticky top-0 left-0 right-0 z-50 flex justify-between items-center bg-black text-white p-4 shadow-md">
           <div className="flex items-center gap-10">
             <Image src={LogoImage} alt="Logo" width={100} height={100} />
             <nav className="flex gap-5">
@@ -85,8 +89,14 @@ export default function DashbaordLayoutWrapper({
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <Image src={LocationIcon} alt="Location" width={20} height={20} />
-            <p>Your location</p>
+            <div className="mr-5 flex flex-row  justify-between content-center">
+              <FontAwesomeIcon
+                icon={faLocationDot}
+                className="mr-1 text-gray-500"
+              />
+              <LocationComponent />
+            </div>
+
             <Image src={GenericAvatar} alt="Avatar" width={30} height={30} />
             <button
               onClick={handleLogout}
@@ -97,9 +107,8 @@ export default function DashbaordLayoutWrapper({
           </div>
         </header>
 
-
         <div className="flex flex-1">
-          <aside className="w-1/4 bg-white p-5 border-r border-gray-300 min-h-screen">
+          <aside className="w-1/6 bg-white p-5 border-r border-gray-300 min-h-screen">
             <div className="bg-black text-white p-4 rounded-md text-center">
               <p className="text-sm">Get the best talent with HireSwift</p>
               <button className="mt-3 bg-[#5E17EB] text-white px-4  rounded hover:bg-[#fff] transition-all duration-300 hover:text-black py-2">

@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   images:{
-    domains:["example.com"],
+    domains:["www.vecteezy.com"],
   }
 };
 
