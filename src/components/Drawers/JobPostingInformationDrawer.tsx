@@ -46,11 +46,16 @@ const JobPostingInformationDrawer: React.FC<
               className={`px-3 py-1 text-xs font-medium rounded-md 
           ${
             selectedJob.status === "published"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
+              ? "bg-green-100 text-green-800 hover:bg-green-200"
+              : selectedJob.status === "draft"
+              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+              : selectedJob.status === "closed"
+              ? "bg-red-100 text-red-800 hover:bg-red-200"
+              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
           }`}
             >
-              {selectedJob.status}
+              {selectedJob.status.charAt(0).toUpperCase() +
+                selectedJob.status.slice(1).toLowerCase()}
             </span>
           </div>
         </div>

@@ -84,10 +84,16 @@ export const getAllJobPostings = async (
   );
   return response.data.data.map((post) => ({
     _id: post._id,
-    title: post.title,
-    jobType: post.jobType,
-    locationType: post.locationType || "",
-    status: post.status,
+    title:
+      post.title.charAt(0).toUpperCase() + post.title.slice(1).toLowerCase(),
+    jobType:
+      post.jobType.charAt(0).toUpperCase() +
+      post.jobType.slice(1).toLowerCase(),
+    locationType:
+      post.locationType.charAt(0).toUpperCase() +
+        post.locationType.slice(1).toLowerCase() || "",
+    status:
+      post.status.charAt(0).toUpperCase() + post.status.slice(1).toLowerCase(),
     createdAt: new Date(post.createdAt).toLocaleDateString(),
     updatedAt: new Date(post.updatedAt).toLocaleDateString(),
   }));
@@ -111,9 +117,13 @@ export const updateJobPosting = async (
   jobData: Partial<CreateJobPostingRequest>,
   token: string | null
 ): Promise<ApiResponse<JobPosting>> => {
-  const response = await axios.put(`${API_URL}/v1/recruiter/job-postings/${id}`, jobData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await axios.put(
+    `${API_URL}/v1/recruiter/job-postings/${id}`,
+    jobData,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   return response.data;
 };
 
@@ -121,8 +131,31 @@ export const deleteJobPosting = async (
   id: string,
   token: string | null
 ): Promise<{ message: string }> => {
-  const response = await axios.delete(`${API_URL}/v1/recruiter/job-postings/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await axios.delete(
+    `${API_URL}/v1/recruiter/job-postings/${id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data;
+};
+
+export const updateJobPostingStatus = async (
+  id: string,
+  status: string,
+  token: string | null
+): Promise<{
+  id: string;
+  status: string;
+  updatedAt: string;
+  message: string;
+}> => {
+  const response = await axios.patch(
+    `${API_URL}/v1/recruiter/job-postings/${id}/status`,
+    { status },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   return response.data;
 };
