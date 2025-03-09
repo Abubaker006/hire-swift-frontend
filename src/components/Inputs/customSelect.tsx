@@ -27,7 +27,7 @@ const CustomSelect: FC<ICustomSelectProps> = ({
       <select
         {...field}
         {...props}
-        className={`w-full max-w-lg px-4 py-3.5 bg-white text-black rounded-lg border border-gray-300 
+        className={`w-full  px-4 py-3.5 bg-white text-black rounded-lg border border-gray-300 
          focus:outline-none focus:ring-2 focus:focus:ring-[#5E17EB] transition-all duration-200 ${
            meta.touched && meta.error ? "border-red-500 focus:ring-red-500" : ""
          }`}

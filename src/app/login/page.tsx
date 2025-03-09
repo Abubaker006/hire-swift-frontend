@@ -80,6 +80,7 @@ const Login = () => {
                     name="email"
                     type="email"
                     placeholder="Enter your email"
+                    isOnboarding={true}
                   />
                 </div>
                 <div className="my-2">
@@ -88,6 +89,7 @@ const Login = () => {
                     name="password"
                     type="password"
                     placeholder="Enter your password"
+                    isOnboarding={true}
                   />
                 </div>
               </div>

@@ -7,15 +7,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import { JobPostFormValidationSchema } from "@/utils/schema";
 import CustomDatePicker from "@/components/Inputs/customDatePicker";
 import { createJobPosting } from "@/apiServices/jobPostingAPI";
-import { useSelector } from "react-redux";
-import { RootState } from "@/hooks/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/hooks/redux/store";
 import { toast } from "react-toastify";
+import { hideLoader, showLoader } from "@/hooks/slices/loaderSlice";
 
 const PostJob = () => {
   const userToken = useSelector((state: RootState) => state.auth.token);
-
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: RootState) => state.loader.isLoading);
   const handleOnSubmit = async (values: any, actions: any) => {
     try {
+      dispatch(showLoader());
       const transformedValues = {
         ...values,
         techStack: values.techStack.split(",").map((tech: any) => tech.trim()),
@@ -29,9 +32,12 @@ const PostJob = () => {
       toast.success("Job Post Created Successfully.");
       actions.resetForm();
     } catch (error) {
+      dispatch(hideLoader());
       console.error("An Error Occured while creating job post:", error);
       toast.error("Something went wrong.");
       actions.resetForm();
+    } finally {
+      dispatch(hideLoader());
     }
   };
   return (
@@ -56,6 +62,7 @@ const PostJob = () => {
           duration: "",
           diversityStatement: "",
           contactEmail: "",
+          numberOfCandidatesRequired: "",
         }}
         validationSchema={JobPostFormValidationSchema}
         onSubmit={handleOnSubmit}
@@ -194,10 +201,19 @@ const PostJob = () => {
               isOnboarding={false}
               onChange={handleChange}
             />
+            <CustomInput
+              label="Required Candidates"
+              name="numberOfCandidatesRequired"
+              placeholder="Enter number of candidates required (i.e 1-2)"
+              type="number"
+              isOnboarding={false}
+              onChange={handleChange}
+            />
             <div className="col-span-2 flex justify-center mt-6">
               <button
                 type="submit"
                 className="bg-black text-white py-3 px-10 rounded-md hover:bg-[#5E17EB] transition-all duration-200 w-1/4"
+                disabled={isLoading}
               >
                 Post Job →
               </button>

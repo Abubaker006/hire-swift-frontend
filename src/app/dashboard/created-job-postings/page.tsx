@@ -129,7 +129,7 @@ const CreatedJobPostings = () => {
   };
   useEffect(() => {
     fetchJobPostings();
-  });
+  }, []);
 
   const handleDetail = async (id: string) => {
     try {
@@ -342,7 +342,7 @@ const CreatedJobPostings = () => {
           onOpenChange={setIsStatusDialogOpen}
         >
           <AlertDialog.Portal>
-            <AlertDialog.Overlay className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-300" />
+            <AlertDialog.Overlay className="fixed inset-0 bg-gray-300/60 backdrop-blur-sm transition-opacity duration-300" />
             <AlertDialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-2xl max-w-md w-full border border-gray-200 animate-in fade-in-0 zoom-in-95 duration-200">
               <AlertDialog.Title className="text-xl font-semibold text-gray-900">
                 Change Job Status

@@ -98,38 +98,44 @@ const SignUp = () => {
                   name="firstName"
                   type="text"
                   placeholder="Enter your first name"
+                  isOnboarding={true}
                 />
                 <CustomInput
                   label="Last Name"
                   name="lastName"
                   type="text"
                   placeholder="Enter your last name"
+                  isOnboarding={true}
                 />
                 <CustomInput
                   label="Email"
                   name="email"
                   type="email"
                   placeholder="Enter your email"
+                  isOnboarding={true}
                 />
                 <CustomInput
                   label="Contact Number"
                   name="contactNumber"
                   type="text"
                   placeholder="Enter your Contact number"
+                  isOnboarding={true}
                 />
                 <CustomInput
                   label="Password"
                   name="password"
                   type="password"
                   placeholder="Enter your password"
+                  isOnboarding={true}
                 />
                 <CustomInput
                   label="Confirm Password"
                   name="confirmPassword"
                   type="password"
                   placeholder="Confirm your password"
+                  isOnboarding={true}
                 />
-                <CustomSelect label="Role" name="role">
+                <CustomSelect label="Role" name="role" isOnboarding={true}>
                   <option value="">Select your role</option>
                   <option value="recruiter">Recruiter</option>
                   <option value="candidate">Candidate {"(User)"}</option>

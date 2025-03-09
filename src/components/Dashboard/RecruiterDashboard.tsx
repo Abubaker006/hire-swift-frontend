@@ -15,7 +15,7 @@ const RecruiterDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-800 mb-8">
                 Welcome {user?.firstName}, wan&apos;t to post a job?
             </h1>
-            <Link href="/dashboard/postjobs">
+            <Link href="/dashboard/postJobs">
                 <button className="bg-[#5E17EB] hover:bg-black text-white font-semibold py-2 px-10 rounded-md transition duration-300 ease-in-out transform hover:scale-105">
                     Click Me!
                 </button>

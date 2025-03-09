@@ -17,7 +17,7 @@ export default function DashboardLayout({
         <Loader />
         {children}
         <ToastContainer
-          position="top-right" 
+          position="top-right"
           autoClose={5000}
           hideProgressBar={false}
           newestOnTop={false}
@@ -26,6 +26,9 @@ export default function DashboardLayout({
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          toastClassName={() =>
+            "w-[400px] md:w-[500px] bg-white shadow-lg rounded-lg p-4 text-black flex flex-row"
+          }
         />
       </DashbaordLayoutWrapper>
     </ReduxProvider>

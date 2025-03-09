@@ -120,6 +120,13 @@ const JobPostingInformationDrawer: React.FC<
           <p className="text-gray-600">{selectedJob.diversityStatement}</p>
         </div>
 
+        <div className="border-t pt-4">
+          <p className="font-semibold text-gray-700">Required Candidates:</p>
+          <p className="text-gray-600">
+            {selectedJob.numberOfCandidatesRequired || "Not Specified"}
+          </p>
+        </div>
+
         <div className="border-t pt-4 flex justify-between text-sm">
           <p className="text-gray-500">Contact: {selectedJob.contactEmail}</p>
           <p className="text-gray-500">

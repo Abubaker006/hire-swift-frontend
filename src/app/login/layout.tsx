@@ -23,6 +23,9 @@ export default function LoginLayout({
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          toastClassName={() =>
+            "w-[400px] md:w-[500px] bg-white shadow-lg rounded-lg p-4 text-black flex flex-row"
+          }
         />
       </body>
     </html>

@@ -39,6 +39,7 @@ export interface JobPosting {
   updatedAt: string;
   __v: number;
   compensation: Compensation;
+  numberOfCandidatesRequired: number;
 }
 
 interface CreateJobPostingRequest {
@@ -53,6 +54,40 @@ interface ApiResponse<T> {
   total?: number;
   page?: number;
   limit?: number;
+}
+
+export interface ApplyJobResponse {
+  message: string;
+  tokensRemaining: number;
+  applicationId: string;
+  assessmentDateTime: string;
+}
+
+export interface CandidateJobData {
+  _id: string;
+  title: string;
+  jobType: string;
+  locationType: string;
+  locationDetails: string;
+  team: string;
+  description: string;
+  techStack: string[];
+  duration: string;
+  createdAt: string;
+  compensation: Compensation;
+  requiredQualification: string;
+  prefferedQualification: string;
+  applicationDeadLine: string;
+  startDate: string;
+  contactEmail: string;
+  numberOfSubmittedApplications: number;
+}
+
+export interface JobPostingsResponse {
+  data: CandidateJobData[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export const createJobPosting = async (
@@ -158,4 +193,49 @@ export const updateJobPostingStatus = async (
     }
   );
   return response.data;
+};
+
+export const applyForJobPosting = async (
+  id: string,
+  token: string | null
+): Promise<ApplyJobResponse> => {
+  try {
+    const response = await axios.post<ApplyJobResponse>(
+      `${API_URL}/v1/candidate/job-postings/${id}/apply`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || "Failed to apply to job");
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const getAllCandidateJobPostings = async (
+  token: string | null
+): Promise<JobPostingsResponse> => {
+  try {
+    const response = await axios.get<JobPostingsResponse>(
+      `${API_URL}/v1/candidate/job-postings`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || "Failed to apply to job");
+    }
+    throw new Error("An unexpected error occurred");
+  }
 };

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Drawer } from "antd";
 import { Formik } from "formik";
 import CustomInput from "@/components/Inputs/customInput";
@@ -11,6 +11,8 @@ import { RootState } from "@/hooks/redux/store";
 import { toast } from "react-toastify";
 import { JobPosting } from "@/apiServices/jobPostingAPI";
 import { JobPostFormValidationSchema } from "@/utils/schema";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 interface JobPostingEditDrawerProps {
   selectedJob: JobPosting;
@@ -25,9 +27,11 @@ const JobPostingEditDrawer: React.FC<JobPostingEditDrawerProps> = ({
   handleCloseDrawer,
 }) => {
   const userToken = useSelector((state: RootState) => state.auth.token);
+  const [isPosting, setIsPosting] = useState<boolean>(false);
 
-  const handleOnSubmit = async (values: any, actions: any) => {
+  const handleOnSubmit = async (values: any) => {
     try {
+      setIsPosting(true);
       const transformedValues = {
         ...values,
         techStack: values.techStack.split(",").map((tech: any) => tech.trim()),
@@ -43,6 +47,8 @@ const JobPostingEditDrawer: React.FC<JobPostingEditDrawerProps> = ({
     } catch (error) {
       console.error("Error updating job post:", error);
       toast.error("Something went wrong.");
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -196,11 +202,29 @@ const JobPostingEditDrawer: React.FC<JobPostingEditDrawerProps> = ({
               isOnboarding={false}
               onChange={handleChange}
             />
+            <CustomInput
+              label="Required Candidates"
+              name="numberOfCandidatesRequired"
+              placeholder="Enter number of candidates required (i.e 1-2)"
+              type="number"
+              isOnboarding={false}
+              onChange={handleChange}
+            />
             <button
               type="submit"
               className="bg-black text-white py-3 px-10 rounded-md hover:bg-[#5E17EB] transition-all duration-200 w-full"
+              disabled={isPosting}
             >
-              Update Job →
+              {isPosting ? (
+                <Spin
+                  indicator={
+                    <LoadingOutlined style={{ color: "white" }} spin />
+                  }
+                  size="large"
+                />
+              ) : (
+                "Update Job →"
+              )}
             </button>
           </form>
         )}

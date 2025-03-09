@@ -48,10 +48,12 @@ export const JobPostFormValidationSchema = Yup.object().shape({
   ),
   techStack: Yup.string().required("Tech stack is required"),
   compensationMin: Yup.number()
+    .typeError("Compensation must be a valid number")
     .nullable()
     .min(0, "Minimum compenstaion cannot be negative"),
   compensationMax: Yup.number()
     .nullable()
+    .typeError("Compensation must be a valid number")
     .min(
       Yup.ref("compensationMin"),
       "Maximum compensation must be greater than minimum"
@@ -64,4 +66,8 @@ export const JobPostFormValidationSchema = Yup.object().shape({
   duration: Yup.string().nullable(),
   diversityStatement: Yup.string().nullable(),
   contactEmail: Yup.string().email("Invalid email").nullable(),
+  numberOfCandidatesRequired: Yup.number()
+    .typeError("Number of candidates required must be a valid number")
+    .required("Number of candidates requried.")
+    .min(1, "Required Candidates cannot be less than 1"),
 });
