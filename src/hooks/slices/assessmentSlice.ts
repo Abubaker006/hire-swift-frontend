@@ -14,7 +14,7 @@ export interface AssessmentValidatedData {
   message: string;
   assessmentData: AssessmentData | null;
   status: string | null;
-  scheduledDateTime: string | Date | null;
+  scheduledDateTime: string | null;
   token?: string;
   error: any;
 }
@@ -25,7 +25,7 @@ const initialState: AssessmentValidatedData = {
   message: "",
   assessmentData: null,
   status: null,
-  scheduledDateTime: null,
+  scheduledDateTime: "",
   token: undefined,
   error: null,
 };

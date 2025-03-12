@@ -9,7 +9,7 @@ interface AssessmentData {
   overallScore: number | null;
 }
 
-interface ValidationResponse {
+export interface ValidationResponse {
   message: string;
   scheduledDateTime: string;
   status: string;

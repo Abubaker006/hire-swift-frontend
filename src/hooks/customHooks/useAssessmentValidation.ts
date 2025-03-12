@@ -1,13 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { validateAssessment } from "@/apiServices/AssessmentAPI";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import {
-  resetValidation,
-  setValidationStatus,
-} from "../slices/assessmentSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { setValidationStatus } from "../slices/assessmentSlice";
 import { hideLoader, showLoader } from "../slices/loaderSlice";
 
 interface useAssessmentValidationParameters {
@@ -26,17 +23,19 @@ interface AssessmentValidatedData {
   isValid: boolean;
   message: string;
   assessmentData: AssessmentData | null;
+  status: string;
+  scheduledDateTime: string | null;
   token?: string;
   error: string | null;
 }
 
 const useAssessmentValidation = ({
   assessmentToken,
-}: useAssessmentValidationParameters): AssessmentValidatedData => {
+}: useAssessmentValidationParameters): AssessmentValidatedData | null => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
-  const validationStatus = useSelector((state: RootState) => state.assessment);
+  const [data, setData] = useState<AssessmentValidatedData | null>(null);
 
   const handleAssessmentValidation = async () => {
     try {
@@ -45,6 +44,17 @@ const useAssessmentValidation = ({
       const response = await validateAssessment(assessmentToken);
       const { message, assessment, token, scheduledDateTime, status } =
         response;
+
+      setData({
+        isLoading: false,
+        isValid: message === "Assessment ready",
+        message,
+        assessmentData: assessment,
+        status: status,
+        scheduledDateTime: scheduledDateTime,
+        token,
+        error: null,
+      });
 
       dispatch(
         setValidationStatus({
@@ -62,8 +72,16 @@ const useAssessmentValidation = ({
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       if (urlToken) {
+        const scheduledTime = new Date(scheduledDateTime);
+        const currentTime = new Date();
+
+        const timeRemaining = scheduledTime.getTime() - currentTime.getTime();
+        const extendedExpiryTime = new Date(
+          currentTime.getTime() + timeRemaining + 5 * 60 * 1000
+        );
+
         Cookies.set("assessmentValidationToken", urlToken, {
-          expires: 1,
+          expires: extendedExpiryTime || 2,
         });
         router.replace("/hireSwift-assessment-site/assessment");
       }
@@ -71,6 +89,7 @@ const useAssessmentValidation = ({
       dispatch(hideLoader());
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
+      setData(null);
       dispatch(
         setValidationStatus({
           isLoading: false,
@@ -88,36 +107,13 @@ const useAssessmentValidation = ({
     }
   };
 
-  const handleTabClose = () => {
-    Cookies.remove("assessmentValidationToken");
-    dispatch(resetValidation());
-  };
-
   useEffect(() => {
     if (assessmentToken) {
       handleAssessmentValidation();
-      window.addEventListener("beforeunload", handleTabClose);
-    } else {
-      dispatch(
-        setValidationStatus({
-          isLoading: false,
-          isValid: false,
-          message: "No assessment token provided",
-          assessmentData: null,
-          status: null,
-          scheduledDateTime: null,
-          token: undefined,
-          error: null,
-        })
-      );
     }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleTabClose);
-    };
   }, [assessmentToken, dispatch]);
 
-  return validationStatus;
+  return data;
 };
 
 export default useAssessmentValidation;
