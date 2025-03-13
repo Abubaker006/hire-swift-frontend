@@ -12,3 +12,16 @@ export const formatDate = (unFormattedDate: string | Date) => {
 
   return formattedDate;
 };
+
+export const formatScheduledTime = (targetTime: string | Date) => {
+  const targetDate = new Date(targetTime);
+  return targetDate.toLocaleString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};

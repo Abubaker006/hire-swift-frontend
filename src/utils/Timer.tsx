@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
+import { formatScheduledTime } from "./dateFormatter";
 interface CountdownTimerProps {
   targetTime: string;
 }
@@ -20,19 +20,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetTime }) => {
       minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
       seconds: Math.floor((difference % (1000 * 60)) / 1000),
     };
-  };
-
-  const formatScheduledTime = () => {
-    const targetDate = new Date(targetTime);
-    return targetDate.toLocaleString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
   };
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -56,7 +43,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetTime }) => {
           .padStart(2, "0")}:${timeLeft.seconds.toString().padStart(2, "0")}`}
       </div>
       <div className="mt-4 text-sm md:text-2xl font-thin">
-        The assessment will commence at {formatScheduledTime()}
+        The assessment will commence at {formatScheduledTime(targetTime)}
       </div>
     </div>
   );
