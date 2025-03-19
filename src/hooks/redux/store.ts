@@ -1,9 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer, { AuthState } from "../slices/authSlice";
 import loaderReducer from "../slices/loaderSlice";
-import assessmentReducer, {
-  AssessmentValidatedData,
-} from "../slices/assessmentSlice";
+import assessmentReducer from "../slices/assessmentSlice";
+import { AssessmentValidatedData } from "@/utils/Types";
 export interface RootState {
   auth: AuthState;
   loader: { isLoading: boolean };

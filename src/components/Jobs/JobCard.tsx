@@ -32,7 +32,11 @@ const JobCard: React.FC<JobCardProps> = ({ jobsData, handleRefreshData }) => {
       handleRefreshData();
     } catch (error) {
       console.error("Error occured while applying for the job.", error);
-      toast.error("Something went wrong.");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
       handleRefreshData();
     }
   };

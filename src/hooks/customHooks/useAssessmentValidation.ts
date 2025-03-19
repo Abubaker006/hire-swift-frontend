@@ -6,35 +6,23 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { setValidationStatus } from "../slices/assessmentSlice";
 import { hideLoader, showLoader } from "../slices/loaderSlice";
+import {
+  AssessmentValidatedData,
+  UseAssessmentValidationResponse,
+} from "@/utils/Types";
+import { toast } from "react-toastify";
+import axios, { AxiosError } from "axios";
 
 interface useAssessmentValidationParameters {
   assessmentToken: string | null;
 }
 
-interface AssessmentData {
-  scheduled: boolean;
-  taken: boolean;
-  passed: boolean;
-  overallScore: number | null;
-}
-
-interface AssessmentValidatedData {
-  isLoading: boolean;
-  isValid: boolean;
-  message: string;
-  assessmentData: AssessmentData | null;
-  status: string;
-  scheduledDateTime: string | null;
-  token?: string;
-  error: string | null;
-}
-
 const useAssessmentValidation = ({
   assessmentToken,
-}: useAssessmentValidationParameters): AssessmentValidatedData | null => {
+}: useAssessmentValidationParameters): UseAssessmentValidationResponse | null => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-
+  const [isValidating, setIsValidating] = useState<boolean>(true);
   const [data, setData] = useState<AssessmentValidatedData | null>(null);
 
   const handleAssessmentValidation = async () => {
@@ -42,8 +30,16 @@ const useAssessmentValidation = ({
       dispatch(showLoader());
 
       const response = await validateAssessment(assessmentToken);
-      const { message, assessment, token, scheduledDateTime, status } =
-        response;
+
+      const { message, assessment, scheduledDateTime, status } = response;
+
+      if (status === "assessment_taken" || status === "assessment_missed") {
+        router.push("/hireSwift-assessment-site/assessment-missed");
+        return;
+      }
+      if (status === "assessment_started") {
+        localStorage.setItem("canResume", "true");
+      }
 
       setData({
         isLoading: false,
@@ -51,8 +47,8 @@ const useAssessmentValidation = ({
         message,
         assessmentData: assessment,
         status: status,
+        token: assessmentToken,
         scheduledDateTime: scheduledDateTime,
-        token,
         error: null,
       });
 
@@ -63,11 +59,12 @@ const useAssessmentValidation = ({
           message,
           assessmentData: assessment,
           status: status,
+          token: assessmentToken,
           scheduledDateTime: scheduledDateTime,
-          token,
           error: null,
         })
       );
+      toast(message || "Assessment Ready");
 
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
@@ -77,8 +74,8 @@ const useAssessmentValidation = ({
 
         const timeRemaining = scheduledTime.getTime() - currentTime.getTime();
         const extendedExpiryTime = new Date(
-          currentTime.getTime() + timeRemaining + 5 * 60 * 1000
-        );
+          currentTime.getTime() + timeRemaining + 6 * 60 * 1000
+        ); //set 6 minutes just to avoid collision with grace time
 
         Cookies.set("assessmentValidationToken", urlToken, {
           expires: extendedExpiryTime || 2,
@@ -87,33 +84,92 @@ const useAssessmentValidation = ({
       }
     } catch (error) {
       dispatch(hideLoader());
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-      setData(null);
-      dispatch(
-        setValidationStatus({
-          isLoading: false,
-          isValid: false,
-          message: "Assessment validation failed",
-          assessmentData: null,
-          status: null,
-          scheduledDateTime: null,
-          token: undefined,
-          error: errorMessage,
-        })
-      );
+      console.error("Error occurred while applying for the job.", error);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message?: string }>;
+        const statusCode = axiosError.response?.status;
+        console.log(statusCode);
+        const errorMessage =
+          axiosError.response?.data?.message || "Assessment validation failed";
+
+        if (statusCode === 401) {
+          toast.error("Session expired. Redirecting to login...");
+          router.push("/hireSwift-assessment-site/invalid-assessment");
+        } else if (statusCode === 403) {
+          toast.error("You don't have permission to access this assessment.");
+          router.push("/hireSwift-assessment-site/assessment-missed");
+        } else {
+          toast.error(errorMessage);
+        }
+
+        dispatch(
+          setValidationStatus({
+            isLoading: false,
+            isValid: false,
+            message: "Assessment validation failed",
+            assessmentData: null,
+            status: "",
+            token: null,
+            scheduledDateTime: null,
+            error: errorMessage,
+          })
+        );
+      } else {
+        // Handle unexpected errors
+        setData(null);
+        setIsValidating(false);
+        dispatch(
+          setValidationStatus({
+            isLoading: false,
+            isValid: false,
+            message: "Assessment validation failed",
+            assessmentData: null,
+            status: "",
+            token: null,
+            scheduledDateTime: null,
+            error: "Something went wrong.",
+          })
+        );
+      }
     } finally {
       dispatch(hideLoader());
+      setIsValidating(false);
     }
   };
 
   useEffect(() => {
     if (assessmentToken) {
       handleAssessmentValidation();
+    } else if (!assessmentToken) {
+      router.push("/hireSwift-assessment-site/assessment-missed");
+      setData({
+        isLoading: false,
+        isValid: false,
+        message: "No token provided",
+        assessmentData: null,
+        status: "no_token",
+        token: null,
+        scheduledDateTime: null,
+        error: "Authentication required",
+      });
+      dispatch(
+        setValidationStatus({
+          isLoading: false,
+          isValid: false,
+          message: "No token provided",
+          assessmentData: null,
+          status: "no_token",
+          token: null,
+          scheduledDateTime: null,
+          error: "Authentication required",
+        })
+      );
+      return;
     }
   }, [assessmentToken, dispatch]);
 
-  return data;
+  return { data, isValidating };
 };
 
 export default useAssessmentValidation;

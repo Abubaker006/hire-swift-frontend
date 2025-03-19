@@ -1,11 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { formatScheduledTime } from "./dateFormatter";
+
 interface CountdownTimerProps {
   targetTime: string;
+  handleDisableTimer: () => void;
 }
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetTime }) => {
+const CountdownTimer: React.FC<CountdownTimerProps> = ({
+  targetTime,
+  handleDisableTimer,
+}) => {
+  const hasValidated = useRef(false);
+
   const calculateTimeLeft = () => {
     const now = new Date();
     const targetDate = new Date(targetTime);
@@ -26,7 +33,18 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetTime }) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      const newTimeLeft = calculateTimeLeft();
+      setTimeLeft(newTimeLeft);
+      if (hasValidated.current) return;
+      if (
+        newTimeLeft.hours === 0 &&
+        newTimeLeft.minutes === 0 &&
+        newTimeLeft.seconds === 0
+      ) {
+        hasValidated.current = true;
+        console.log("Calling");
+        handleDisableTimer();
+      }
     }, 1000);
 
     return () => clearInterval(timer);
@@ -37,10 +55,10 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetTime }) => {
       <h1 className="text-2xl md:text-3xl font-semibold mb-4 animate-pulse text-center">
         Time left in scheduled assessment
       </h1>
-      <div className="text-2xl md:text-3xl  font-semibold">
-        {`${timeLeft.hours.toString().padStart(2, "0")}:${timeLeft.minutes
+      <div className="text-2xl md:text-3xl font-semibold">
+        {`${timeLeft?.hours.toString().padStart(2, "0")}:${timeLeft?.minutes
           .toString()
-          .padStart(2, "0")}:${timeLeft.seconds.toString().padStart(2, "0")}`}
+          .padStart(2, "0")}:${timeLeft?.seconds.toString().padStart(2, "0")}`}
       </div>
       <div className="mt-4 text-sm md:text-2xl font-thin">
         The assessment will commence at {formatScheduledTime(targetTime)}

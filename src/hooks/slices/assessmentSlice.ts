@@ -1,32 +1,15 @@
 // slices/assessmentSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface AssessmentData {
-  scheduled: boolean;
-  taken: boolean;
-  passed: boolean;
-  overallScore: number | null;
-}
-
-export interface AssessmentValidatedData {
-  isLoading: boolean;
-  isValid: boolean;
-  message: string;
-  assessmentData: AssessmentData | null;
-  status: string | null;
-  scheduledDateTime: string | null;
-  token?: string;
-  error: any;
-}
+import { AssessmentValidatedData } from "@/utils/Types";
 
 const initialState: AssessmentValidatedData = {
   isLoading: false,
   isValid: false,
   message: "",
   assessmentData: null,
-  status: null,
+  status: "",
+  token: null,
   scheduledDateTime: "",
-  token: undefined,
   error: null,
 };
 
