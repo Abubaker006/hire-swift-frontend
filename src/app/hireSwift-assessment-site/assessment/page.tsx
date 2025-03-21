@@ -3,8 +3,6 @@ import { AppDispatch, RootState } from "@/hooks/redux/store";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Timer from "@/utils/Timer";
-import CodeEditor from "@/components/CodeEidtor/CodeEditor";
-import SpeechRecognitionComponent from "@/components/SpeechRecognition/SpeechRecognition";
 import { hideLoader, showLoader } from "@/hooks/slices/loaderSlice";
 import { formatScheduledTime } from "@/utils/dateFormatter";
 import { toast } from "react-toastify";
@@ -12,6 +10,8 @@ import { startAssessment } from "@/apiServices/AssessmentAPI";
 import Cookies from "js-cookie";
 import { validateAssessment } from "@/apiServices/AssessmentAPI";
 import { useRouter } from "next/navigation";
+import QuestionRenderer from "@/components/QuestionRenderer/QuestionRenderer";
+import { Question, AssessmentQuestion } from "@/utils/Types";
 
 const AssessmentPortal = () => {
   const router = useRouter();
@@ -20,14 +20,17 @@ const AssessmentPortal = () => {
   const { assessmentData, message, scheduledDateTime, status } = useSelector(
     (state: RootState) => state.assessment
   );
+  const [questions, setQuestions] = useState<Question[] | AssessmentQuestion[]>(
+    []
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
   const token =
     (useSelector((state: RootState) => state.assessment.token) ||
       Cookies.get("assessmentValidationToken")) ??
     null;
-
-  const [transcript, setTranscript] = useState<string>("");
   const [canStartAssessment, setCanStartAssessment] = useState<boolean>(false);
   const [isValidatedToStart, setIsValidatedToStart] = useState<boolean>(false);
+  const [assessmentTime, setAssessentTime] = useState<number | null>(0);
 
   const getStoredTime = () => {
     const storedTime = localStorage.getItem("scheduledDateTime");
@@ -54,11 +57,6 @@ const AssessmentPortal = () => {
     }
   }, [assessmentData, message, token, scheduledDateTime, status]);
 
-  const handleTranscriptChange = (newTranscript: string) => {
-    setTranscript(newTranscript);
-    console.log(newTranscript);
-  };
-
   const handleStartAssessment = async (canStart: boolean) => {
     try {
       if (!canStart) return;
@@ -67,8 +65,15 @@ const AssessmentPortal = () => {
       Cookies.set("assessmentValidationToken", response.token ?? "", {
         expires: totalTime / 86400,
       });
-      setIsValidatedToStart(true);
-      setCanStartAssessment(false);
+      console.log(response);
+      if (response.questions?.length) {
+        setQuestions(response.questions);
+        setAssessentTime(response.totalTime);
+        setIsValidatedToStart(true);
+        setCanStartAssessment(false);
+      } else {
+        throw new Error("No questions received from the server");
+      }
     } catch (error) {
       setIsValidatedToStart(false);
       setCanStartAssessment(true);
@@ -125,8 +130,28 @@ const AssessmentPortal = () => {
       console.log("Token", token);
       const response = await validateAssessment(token);
       if (response?.canStart) {
+        const questionsArray = Array.isArray(response.questions)
+          ? response.questions
+          : response.questions
+          ? [response.questions]
+          : [];
+
         setIsValidatedToStart(true);
         setCanStartAssessment(false);
+        console.log("reponse on refresh", response);
+        if (questionsArray.length > 0) {
+          console.log("Found questions", response.questions);
+          setQuestions(questionsArray);
+          setAssessentTime(response.totalTime ?? 0);
+        } else if (
+          response.canStart &&
+          response.status === "assessment_scheduled"
+        ) {
+          setCanStartAssessment(true);
+          setIsValidatedToStart(false);
+        } else if (questionsArray.length <= 0) {
+          router.push("/hireSwift-assessment-site/assessment-submitted");
+        }
       }
     } catch (error) {
       isValidatingInProgress.current = false;
@@ -142,6 +167,18 @@ const AssessmentPortal = () => {
       isValidatingInProgress.current = false;
     }
   };
+
+  const handleNextQuestion = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else if (
+      currentIndex === questions.length - 1 ||
+      currentIndex >= questions.length - 1
+    ) {
+      router.push("/hireSwift-assessment-site/assessment-submitted");
+    }
+  };
+
   useEffect(() => {
     const canResume: string | null = localStorage.getItem("canResume");
     if (canResume === "true") {
@@ -153,6 +190,10 @@ const AssessmentPortal = () => {
       localStorage.setItem("canResume", "false");
     }
   }, []);
+
+  useEffect(() => {
+    console.log("questions", questions);
+  }, [questions]);
 
   return (
     <>
@@ -193,39 +234,13 @@ const AssessmentPortal = () => {
       {isValidatedToStart && !canStartAssessment && (
         <>
           <div className="flex h-[92.4vh] w-full bg-[#121212]">
-            <div className="w-2/3">
-              <CodeEditor />
-              {/* <SpeechRecognitionComponent
-            onTranscriptChange={handleTranscriptChange}
-          /> */}
-            </div>
-
-            <div className="w-[1px] bg-[#fff]"></div>
-
-            <div className="w-1/3 p-6 flex flex-col bg-black">
-              <h1 className="text-3xl font-bold mb-3 text-[#5E17EB]">
-                Question
-              </h1>
-              <p className="text-white mb-4">
-                You are required to implement a function that reverses a string
-                while preserving spaces.
-              </p>
-              <p className="text-white mb-6">
-                Example: Input: &quot;hello world&quot; → Output: &quot;dlrow
-                olleh&quot;
-              </p>
-              <p className="mt-auto font-semibold text-white">
-                Time remaining{" "}
-              </p>
-              <h1
-                className="text-3xl font-bold mb-3 text-[#5E17EB]"
-                style={{
-                  WebkitTextStroke: "0.5px white",
-                }}
-              >
-                00:05
-              </h1>
-            </div>
+            {questions.length > 0 && (
+              <QuestionRenderer
+                question={questions[currentIndex]}
+                onNext={handleNextQuestion}
+                assessmentTime={assessmentTime}
+              />
+            )}
           </div>
         </>
       )}

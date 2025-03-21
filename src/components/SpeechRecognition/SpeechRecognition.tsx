@@ -4,7 +4,7 @@ import "regenerator-runtime/runtime";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import { Clock, Mic, MicOff, Send } from "lucide-react";
+import { Mic, MicOff, Send } from "lucide-react";
 
 interface SpeechRecognitionProps {
   onTranscriptChange: (transcript: string) => void;
@@ -27,12 +27,16 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
   console.log("Transcript:", transcript);
 
   useEffect(() => {
-    console.log("useEffect triggered, transcript:", transcript);
-    if (onTranscriptChange) {
+    if (listening) {
+      setInputText((prevText) => prevText + " " + transcript);
       onTranscriptChange(transcript);
     }
-    setInputText(transcript);
-  }, [transcript, onTranscriptChange]);
+  }, [transcript, listening, onTranscriptChange]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(e.target.value);
+    onTranscriptChange(e.target.value); // Ensure parent gets the typed input
+  };
 
   const toggleListening = () => {
     if (listening) {
@@ -52,17 +56,7 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-6 p-6  w-full mx-auto bg-[#121212]">
-        <div className="flex items-center justify-between p-4 w-full bg-[#181818] text-white border-b border-gray-700 rounded-lg shadow-md">
-          <div className="flex items-center gap-3">
-            <Clock size={18} className="text-gray-400" />
-            <span className="text-sm text-gray-300">Duration: 40 minutes</span>
-          </div>
-          <span className="text-sm font-semibold tracking-wide text-gray-100">
-            User Assessment Module
-          </span>
-        </div>
-
+      <div className="flex flex-col items-center justify-center gap-6 p-6 h-[96vh]  w-full mx-auto bg-[#121212]">
         <button
           onClick={toggleListening}
           className={`relative flex items-center justify-center w-24 h-24 rounded-full bg-[#5E17EB] text-white shadow-xl transition-all duration-300 
@@ -84,10 +78,13 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
         </p>
 
         <button
-          onClick={resetTranscript}
+          onClick={() => {
+            resetTranscript();
+            setInputText("");
+          }}
           className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-[#5E17EB] text-white font-semibold shadow-lg 
-  transition-all duration-300 transform active:scale-95 
-  hover:from-[#7c3ef7] hover:to-[#4c1d95] hover:shadow-purple-500/50"
+            transition-all duration-300 transform active:scale-95 
+           hover:from-[#7c3ef7] hover:to-[#4c1d95] hover:shadow-purple-500/50"
         >
           Reset
         </button>
@@ -96,7 +93,7 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
           <div className="flex items-center bg-[#1E1E1E] text-white rounded-lg shadow-md focus-within:ring-2 focus-within:ring-[#5E17EB] transition-all px-4 py-2">
             <textarea
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={handleInputChange}
               placeholder="Type here if you don't want to speak..."
               className="w-full max-h-40 min-h-[80px] px-4 py-3 pr-12 bg-transparent text-white rounded-lg focus:outline-none resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700"
             />

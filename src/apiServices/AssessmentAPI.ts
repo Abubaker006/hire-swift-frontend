@@ -67,3 +67,46 @@ export const startAssessment = async (
     );
   }
 };
+
+interface SubmitAnswerResponse {
+  message: string;
+}
+export const submitAssessmentAnswer = async (
+  token: string | null,
+  questionId: string,
+  answer: string,
+  language: string
+): Promise<SubmitAnswerResponse> => {
+  try {
+    if (!token || !questionId || !answer || !language) {
+      throw new Error("Missing required parameters");
+    }
+
+    const payload = {
+      questionId,
+      answer,
+      language,
+    };
+    const response = await axios.post<SubmitAnswerResponse>(
+      `${API_URL}/v1/assessment/submit-answer`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Failed to Submit answer";
+      throw new Error(errorMessage);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : "An unexpected error occured."
+    );
+  }
+};

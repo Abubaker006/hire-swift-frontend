@@ -27,6 +27,8 @@ export interface BaseValidationResponse {
   scheduledDateTime: string;
   status: string;
   assessment: AssessmentData;
+  questions?: Question[];
+  totalTime?: number | null;
 }
 
 export interface ErrorResponse {
@@ -38,10 +40,11 @@ export type ValidationResponse = BaseValidationResponse;
 export interface AssessmentQuestion {
   id: string;
   question: string;
-  type: string;
+  type: "coding" | "asr";
   difficulty: string;
   classification: string;
-  timeLimit: string;
+  timeLimit: number;
+  index: number;
 }
 
 export interface StartAssessmentSuccessResponse {
@@ -56,3 +59,19 @@ export interface StartAssessmentSuccessResponse {
 }
 
 export type StartAssessmentResponse = StartAssessmentSuccessResponse;
+
+export interface Question {
+  id: string;
+  question: string;
+  type: "coding" | "asr";
+  difficulty: string;
+  classification: string;
+  timeLimit: number;
+  index: number;
+}
+
+export interface QuestionRendererProps {
+  question: Question;
+  onNext: () => void;
+  assessmentTime: number | null;
+}
