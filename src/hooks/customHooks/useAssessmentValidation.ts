@@ -34,6 +34,7 @@ const useAssessmentValidation = ({
       const { message, assessment, scheduledDateTime, status } = response;
 
       if (status === "assessment_taken" || status === "assessment_missed") {
+        console.log("This code was also");
         router.push("/hireSwift-assessment-site/assessment-missed");
         return;
       }
@@ -94,7 +95,7 @@ const useAssessmentValidation = ({
           axiosError.response?.data?.message || "Assessment validation failed";
 
         if (statusCode === 401) {
-          toast.error("Session expired. Redirecting to login...");
+          toast.error("Your assessment has expired.");
           router.push("/hireSwift-assessment-site/invalid-assessment");
         } else if (statusCode === 403) {
           toast.error("You don't have permission to access this assessment.");
@@ -116,7 +117,6 @@ const useAssessmentValidation = ({
           })
         );
       } else {
-        // Handle unexpected errors
         setData(null);
         setIsValidating(false);
         dispatch(

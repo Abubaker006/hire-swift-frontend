@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import useAssessmentValidation from "@/hooks/customHooks/useAssessmentValidation";
 import Cookies from "js-cookie";
@@ -14,7 +14,6 @@ const AssessmentLayoutPage = ({ children }: { children: React.ReactNode }) => {
   const searchParams = useSearchParams();
   const tokenFromUrl = searchParams.get("token");
   const tokenFromCookie = Cookies.get("assessmentValidationToken");
-
   const assessmentToken: string | null =
     tokenFromUrl ?? tokenFromCookie ?? null;
 
@@ -24,14 +23,31 @@ const AssessmentLayoutPage = ({ children }: { children: React.ReactNode }) => {
     assessmentToken,
   });
 
+  return (
+    <Suspense fallback={<Loader />}>
+      <AssessmentContent assessmentToken={assessmentToken}>
+        {children}
+      </AssessmentContent>
+    </Suspense>
+  );
+};
+
+const AssessmentContent = ({
+  assessmentToken,
+  children,
+}: {
+  assessmentToken: string | null;
+  children: React.ReactNode;
+}) => {
   const validationResponse = useAssessmentValidation({ assessmentToken });
-  if (!validationResponse) {
+
+  if (!validationResponse || validationResponse.isValidating) {
     return <Loader />;
   }
-  const { isValidating } = validationResponse;
 
-  if (isValidating) {
-    return <Loader />;
+  const { data } = validationResponse;
+  if (!data?.isValid) {
+    return null;
   }
 
   return (
@@ -41,7 +57,7 @@ const AssessmentLayoutPage = ({ children }: { children: React.ReactNode }) => {
           <Image src={LogoImage} alt="Logo" width={100} height={100} />
         </div>
         <div className="flex items-center gap-3">
-          <div className="mr-5 flex flex-row  justify-between content-center">
+          <div className="mr-5 flex flex-row justify-between content-center">
             <FontAwesomeIcon
               icon={faLocationDot}
               className="mr-1 text-gray-500"
