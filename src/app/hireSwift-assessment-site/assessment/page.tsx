@@ -13,8 +13,7 @@ import { useRouter } from "next/navigation";
 import QuestionRenderer from "@/components/QuestionRenderer/QuestionRenderer";
 import { Question, AssessmentQuestion } from "@/utils/Types";
 import Loader from "@/utils/loader";
-
-const GRACE_PERIOD_MINUTES: number = 5;
+import axios, { AxiosError } from "axios";
 
 const AssessmentPortal = () => {
   const router = useRouter();
@@ -102,11 +101,22 @@ const AssessmentPortal = () => {
         console.log("Assessment can be started.", response?.canStart);
       }
     } catch (error) {
-      console.error("Error occurred while validating assessment:", error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message?: string }>;
+        const statusCode = axiosError.response?.status;
+        console.log(statusCode);
+        const errorMessage =
+          axiosError.response?.data?.message || "Assessment validation failed";
+
+        if (statusCode === 401) {
+          toast.error("Your assessment has expired.");
+          router.push("/hireSwift-assessment-site/invalid-assessment");
+        } else if (statusCode === 403) {
+          toast.error("You don't have permission to access this assessment.");
+          router.push("/hireSwift-assessment-site/assessment-missed");
+        } else {
+          toast.error(errorMessage);
+        }
       }
     }
   };
