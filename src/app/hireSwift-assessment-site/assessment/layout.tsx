@@ -17,11 +17,6 @@ const AssessmentLayoutPage = ({ children }: { children: React.ReactNode }) => {
   const assessmentToken: string | null =
     tokenFromUrl ?? tokenFromCookie ?? null;
 
-  console.log("Assessment Token:", {
-    tokenFromUrl,
-    tokenFromCookie,
-    assessmentToken,
-  });
 
   return (
     <Suspense fallback={<Loader />}>
@@ -45,8 +40,8 @@ const AssessmentContent = ({
     return <Loader />;
   }
 
-  const { data } = validationResponse;
-  if (!data?.isValid) {
+  const { data, isValidating } = validationResponse;
+  if (!data || isValidating) {
     return null;
   }
 

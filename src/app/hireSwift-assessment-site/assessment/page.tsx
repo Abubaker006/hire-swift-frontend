@@ -12,6 +12,9 @@ import { validateAssessment } from "@/apiServices/AssessmentAPI";
 import { useRouter } from "next/navigation";
 import QuestionRenderer from "@/components/QuestionRenderer/QuestionRenderer";
 import { Question, AssessmentQuestion } from "@/utils/Types";
+import Loader from "@/utils/loader";
+
+const GRACE_PERIOD_MINUTES: number = 5;
 
 const AssessmentPortal = () => {
   const router = useRouter();
@@ -20,6 +23,7 @@ const AssessmentPortal = () => {
   const { assessmentData, message, scheduledDateTime, status } = useSelector(
     (state: RootState) => state.assessment
   );
+  const isLoading = useSelector((state: RootState) => state.loader.isLoading);
   const [questions, setQuestions] = useState<Question[] | AssessmentQuestion[]>(
     []
   );
@@ -92,7 +96,6 @@ const AssessmentPortal = () => {
       return;
     }
     try {
-      console.log("Token", token);
       const response = await validateAssessment(token);
       if (response?.canStart) {
         handleStartAssessment(response.canStart);
@@ -127,7 +130,6 @@ const AssessmentPortal = () => {
       return;
     }
     try {
-      console.log("Token", token);
       const response = await validateAssessment(token);
       if (response?.canStart) {
         const questionsArray = Array.isArray(response.questions)
@@ -191,12 +193,12 @@ const AssessmentPortal = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("questions", questions);
-  }, [questions]);
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
-    <>
+    <div>
       {!canStartAssessment &&
         !isValidatedToStart &&
         targetTime &&
@@ -244,7 +246,7 @@ const AssessmentPortal = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 
