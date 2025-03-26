@@ -9,7 +9,7 @@ import { updateJobPosting } from "@/apiServices/jobPostingAPI";
 import { useSelector } from "react-redux";
 import { RootState } from "@/hooks/redux/store";
 import { toast } from "react-toastify";
-import { JobPosting } from "@/apiServices/jobPostingAPI";
+import { JobPosting } from "@/utils/Types";
 import { JobPostFormValidationSchema } from "@/utils/schema";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";

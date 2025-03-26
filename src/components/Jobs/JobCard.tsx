@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import GenericModal from "../Modal/GenericModal";
-import { CandidateJobData } from "@/apiServices/jobPostingAPI";
+import { CandidateJobData } from "@/utils/Types";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/hooks/redux/store";
 import { applyForJobPosting } from "@/apiServices/jobPostingAPI";
@@ -192,7 +192,7 @@ const JobCard: React.FC<JobCardProps> = ({ jobsData, handleRefreshData }) => {
                 )}
 
                 {jobsData?.startDate && (
-                  <div>
+                   <div className="border-b  border-gray-300 pb-2">
                     <p className="text-gray-800 font-semibold">Start Date</p>
                     <p className="text-gray-500">
                       {new Date(jobsData.startDate).toLocaleDateString()}

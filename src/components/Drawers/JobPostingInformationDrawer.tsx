@@ -1,7 +1,7 @@
 import React from "react";
 import { Drawer } from "antd";
-import { JobPosting } from "@/apiServices/jobPostingAPI";
 import { formatDate } from "@/utils/dateFormatter";
+import { JobPosting } from "@/utils/Types";
 
 interface JobPostingInformationDrawerProps {
   selectedJob: JobPosting;

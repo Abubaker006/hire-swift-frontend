@@ -75,3 +75,149 @@ export interface QuestionRendererProps {
   onNext: () => void;
   assessmentTime: number | null;
 }
+
+export interface JobPostings {
+  _id: string;
+  title: string;
+  jobType: string;
+  locationType: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+interface Compensation {
+  min: number;
+  max: number;
+  type: string;
+}
+
+export interface JobPosting {
+  _id: string;
+  recruiterId: string;
+  title: string;
+  jobType: string;
+  locationType: string;
+  locationDetails: string;
+  team: string;
+  description: string;
+  requiredQualification: string;
+  prefferedQualification: string;
+  techStack: string[];
+  applicationDeadLine: string;
+  startDate: string;
+  duration: string;
+  diversityStatement: string;
+  contactEmail: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  compensation: Compensation;
+  numberOfCandidatesRequired: number;
+}
+
+export interface CreateJobPostingRequest {
+  title: string;
+  jobType: string;
+  status: string;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface ApplyJobResponse {
+  message: string;
+  tokensRemaining: number;
+  applicationId: string;
+  assessmentDateTime: string;
+}
+
+export interface CandidateJobData {
+  _id: string;
+  title: string;
+  jobType: string;
+  locationType: string;
+  locationDetails: string;
+  team: string;
+  description: string;
+  techStack: string[];
+  duration: string;
+  createdAt: string;
+  compensation: Compensation;
+  requiredQualification: string;
+  prefferedQualification: string;
+  applicationDeadLine: string;
+  startDate: string;
+  contactEmail: string;
+  numberOfSubmittedApplications: number;
+}
+
+export interface JobPostingsResponse {
+  data: CandidateJobData[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface Assessment {
+  scheduled: boolean;
+  scheduledDateTime: string | Date
+  assessmentCode: string;
+  assessmentLink: string;
+  taken: boolean;
+  isStarted: boolean;
+  quesiton: AssessmentQuestion;
+}
+
+interface Interview {
+  scheduled: boolean;
+  completed: boolean;
+}
+interface Offer {
+  offered: boolean;
+  accepted: boolean;
+}
+interface Compensation {
+  min: number;
+  max: number;
+  type: string;
+}
+
+export interface JobDetails {
+  _id: string;
+  title: string;
+  jobType: string;
+  locationType: string;
+  locationDetails: string;
+  team: string;
+  description: string;
+  requiredQualification: string;
+  prefferedQualification: string;
+  techStack: string[];
+  applicationDeadLine: string;
+  startDate: string;
+  duration: string;
+  contactEmail: string;
+  createdAt: string;
+  compensation: Compensation;
+}
+export interface Application {
+  _id: string;
+  userId: string;
+  jobId: JobDetails;
+  assessment: Assessment;
+  interview: Interview;
+  offer: Offer;
+  status: string;
+  appliedAt: string;
+  updatedAt: string;
+  __v: number;
+}
+export interface ApplicationsResponse {
+  applications: Application[];
+}

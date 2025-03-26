@@ -67,13 +67,13 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
             label: "View Job Postings",
           },
           { href: "/dashboard/statistics", label: "Statistics" },
-          { href: "/dashboard/faqs", label: "FAQ" },
+          // { href: "/dashboard/faqs", label: "FAQ" },
         ]
       : [
           { href: "/dashboard/jobListings", label: "Job Listings" },
-          { href: "/dashboard/applications", label: "My Applications" },
-          { href: "/dashboard/interviews", label: "Interviews" },
-          { href: "/dashboard/faqs", label: "FAQ" },
+          { href: "/dashboard/my-applications", label: "My Applications" },
+          { href: "/dashboard/record", label: "Record" },
+          // { href: "/dashboard/faqs", label: "FAQ" },
         ];
 
   if (isChecking || role === null) {

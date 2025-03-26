@@ -11,11 +11,10 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import {
   getAllJobPostings,
   getJobPost,
-  JobPosting,
-  JobPostings,
   deleteJobPosting,
   updateJobPostingStatus,
 } from "@/apiServices/jobPostingAPI";
+import { JobPosting, JobPostings } from "@/utils/Types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/hooks/redux/store";
 import { toast } from "react-toastify";

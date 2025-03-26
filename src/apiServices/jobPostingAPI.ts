@@ -1,107 +1,35 @@
 import nextConfig from "../../next.config";
 import axios from "axios";
 const API_URL = nextConfig.env?.NEXT_PUBLIC_API_URL ?? "";
-
-export interface JobPostings {
-  _id: string;
-  title: string;
-  jobType: string;
-  locationType: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
-interface Compensation {
-  min: number;
-  max: number;
-  type: string;
-}
-
-export interface JobPosting {
-  _id: string;
-  recruiterId: string;
-  title: string;
-  jobType: string;
-  locationType: string;
-  locationDetails: string;
-  team: string;
-  description: string;
-  requiredQualification: string;
-  prefferedQualification: string;
-  techStack: string[];
-  applicationDeadLine: string;
-  startDate: string;
-  duration: string;
-  diversityStatement: string;
-  contactEmail: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-  compensation: Compensation;
-  numberOfCandidatesRequired: number;
-}
-
-interface CreateJobPostingRequest {
-  title: string;
-  jobType: string;
-  status: string;
-}
-
-interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-export interface ApplyJobResponse {
-  message: string;
-  tokensRemaining: number;
-  applicationId: string;
-  assessmentDateTime: string;
-}
-
-export interface CandidateJobData {
-  _id: string;
-  title: string;
-  jobType: string;
-  locationType: string;
-  locationDetails: string;
-  team: string;
-  description: string;
-  techStack: string[];
-  duration: string;
-  createdAt: string;
-  compensation: Compensation;
-  requiredQualification: string;
-  prefferedQualification: string;
-  applicationDeadLine: string;
-  startDate: string;
-  contactEmail: string;
-  numberOfSubmittedApplications: number;
-}
-
-export interface JobPostingsResponse {
-  data: CandidateJobData[];
-  total: number;
-  page: number;
-  limit: number;
-}
+import {
+  CreateJobPostingRequest,
+  JobPosting,
+  ApiResponse,
+  JobPostings,
+  ApplyJobResponse,
+  JobPostingsResponse,
+  ApplicationsResponse,
+} from "@/utils/Types";
 
 export const createJobPosting = async (
   jobData: CreateJobPostingRequest,
   token: string | null
 ): Promise<ApiResponse<JobPosting>> => {
-  const response = await axios.post(
-    `${API_URL}/v1/recruiter/job-postings`,
-    jobData,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+  try {
+    const response = await axios.post(
+      `${API_URL}/v1/recruiter/job-postings`,
+      jobData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response.data;
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const getAllJobPostings = async (
@@ -110,41 +38,56 @@ export const getAllJobPostings = async (
   page: number = 1,
   limit: number = 10
 ): Promise<JobPostings[]> => {
-  const response = await axios.get<ApiResponse<JobPostings[]>>(
-    `${API_URL}/v1/recruiter/job-postings`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { status, page, limit },
+  try {
+    const response = await axios.get<ApiResponse<JobPostings[]>>(
+      `${API_URL}/v1/recruiter/job-postings`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { status, page, limit },
+      }
+    );
+    return response.data.data.map((post) => ({
+      _id: post._id,
+      title:
+        post.title.charAt(0).toUpperCase() + post.title.slice(1).toLowerCase(),
+      jobType:
+        post.jobType.charAt(0).toUpperCase() +
+        post.jobType.slice(1).toLowerCase(),
+      locationType:
+        post.locationType.charAt(0).toUpperCase() +
+          post.locationType.slice(1).toLowerCase() || "",
+      status:
+        post.status.charAt(0).toUpperCase() +
+        post.status.slice(1).toLowerCase(),
+      createdAt: new Date(post.createdAt).toLocaleDateString(),
+      updatedAt: new Date(post.updatedAt).toLocaleDateString(),
+    }));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response.data.data.map((post) => ({
-    _id: post._id,
-    title:
-      post.title.charAt(0).toUpperCase() + post.title.slice(1).toLowerCase(),
-    jobType:
-      post.jobType.charAt(0).toUpperCase() +
-      post.jobType.slice(1).toLowerCase(),
-    locationType:
-      post.locationType.charAt(0).toUpperCase() +
-        post.locationType.slice(1).toLowerCase() || "",
-    status:
-      post.status.charAt(0).toUpperCase() + post.status.slice(1).toLowerCase(),
-    createdAt: new Date(post.createdAt).toLocaleDateString(),
-    updatedAt: new Date(post.updatedAt).toLocaleDateString(),
-  }));
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const getJobPost = async (
   id: string,
   token: string | null
 ): Promise<ApiResponse<JobPosting>> => {
-  const response = await axios.get(
-    `${API_URL}/v1/recruiter/job-postings/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+  try {
+    const response = await axios.get(
+      `${API_URL}/v1/recruiter/job-postings/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response;
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const updateJobPosting = async (
@@ -152,27 +95,41 @@ export const updateJobPosting = async (
   jobData: Partial<CreateJobPostingRequest>,
   token: string | null
 ): Promise<ApiResponse<JobPosting>> => {
-  const response = await axios.put(
-    `${API_URL}/v1/recruiter/job-postings/${id}`,
-    jobData,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+  try {
+    const response = await axios.put(
+      `${API_URL}/v1/recruiter/job-postings/${id}`,
+      jobData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response.data;
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const deleteJobPosting = async (
   id: string,
   token: string | null
 ): Promise<{ message: string }> => {
-  const response = await axios.delete(
-    `${API_URL}/v1/recruiter/job-postings/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+  try {
+    const response = await axios.delete(
+      `${API_URL}/v1/recruiter/job-postings/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response.data;
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const updateJobPostingStatus = async (
@@ -185,14 +142,21 @@ export const updateJobPostingStatus = async (
   updatedAt: string;
   message: string;
 }> => {
-  const response = await axios.patch(
-    `${API_URL}/v1/recruiter/job-postings/${id}/status`,
-    { status },
-    {
-      headers: { Authorization: `Bearer ${token}` },
+  try {
+    const response = await axios.patch(
+      `${API_URL}/v1/recruiter/job-postings/${id}/status`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  );
-  return response.data;
+    throw new Error("An unexpected error occurred");
+  }
 };
 
 export const applyForJobPosting = async (
@@ -211,8 +175,8 @@ export const applyForJobPosting = async (
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || "Failed to apply to job");
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
     throw new Error("An unexpected error occurred");
   }
@@ -233,8 +197,29 @@ export const getAllCandidateJobPostings = async (
 
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || "Failed to apply to job");
+    if (axios.isAxiosError(error)) {
+      throw error;
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const getMyApplications = async (
+  token: string | null
+): Promise<ApplicationsResponse> => {
+  try {
+    const response = await axios.get<ApplicationsResponse>(
+      `${API_URL}/v1/candidate/job-applications`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
     throw new Error("An unexpected error occurred");
   }
