@@ -6,7 +6,10 @@ import Timer from "@/utils/Timer";
 import { hideLoader, showLoader } from "@/hooks/slices/loaderSlice";
 import { formatScheduledTime } from "@/utils/dateFormatter";
 import { toast } from "react-toastify";
-import { startAssessment } from "@/apiServices/AssessmentAPI";
+import {
+  startAssessment,
+  startAssessmentEvaluation,
+} from "@/apiServices/AssessmentAPI";
 import Cookies from "js-cookie";
 import { validateAssessment } from "@/apiServices/AssessmentAPI";
 import { useRouter } from "next/navigation";
@@ -180,14 +183,27 @@ const AssessmentPortal = () => {
     }
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else if (
       currentIndex === questions.length - 1 ||
       currentIndex >= questions.length - 1
     ) {
-      router.push("/hireSwift-assessment-site/assessment-submitted");
+      // here we call the evaluation api
+      try {
+        const response = await startAssessmentEvaluation(token);
+        if (response) {
+          router.push("/hireSwift-assessment-site/assessment-submitted");
+        }
+      } catch (error) {
+        await startAssessmentEvaluation(token); //just in case the api fails we make the call again 
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 

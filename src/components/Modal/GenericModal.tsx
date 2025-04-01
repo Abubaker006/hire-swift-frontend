@@ -6,10 +6,16 @@ interface GenericModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  width?: number; 
+  width?: number;
 }
 
-const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, children, width = 500 }) => {
+const GenericModal: React.FC<GenericModalProps> = ({
+  open,
+  onClose,
+  title,
+  children,
+  width = 500,
+}) => {
   return (
     <Modal
       open={open}
@@ -19,7 +25,7 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, child
       title={title}
       width={width}
     >
-      {children}
+      <div className="max-h-[500] overflow-y-auto">{children}</div>
     </Modal>
   );
 };

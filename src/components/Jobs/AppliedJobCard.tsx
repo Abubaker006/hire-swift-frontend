@@ -116,7 +116,7 @@ const AppliedJobsCard: React.FC<JobCardProps> = ({
           <div className="w-[300px] absolute bottom-3 flex flex-col">
             <div className="w-full  flex justify-around">
               <button
-                className="w-[140px] bg-purple-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-purple-400 transition"
+                className="w-[140px] bg-[#000] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-purple-400 transition"
                 onClick={handleOnClick}
               >
                 View Details
@@ -127,7 +127,7 @@ const AppliedJobsCard: React.FC<JobCardProps> = ({
                   href={assessmentLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-[140px] bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-500 transition text-center"
+                  className="w-[140px] bg-[#5E17EB] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-500 transition text-center"
                 >
                   Start
                 </a>

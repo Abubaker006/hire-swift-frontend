@@ -166,7 +166,7 @@ export interface JobPostingsResponse {
 
 interface Assessment {
   scheduled: boolean;
-  scheduledDateTime: string | Date
+  scheduledDateTime: string | Date;
   assessmentCode: string;
   assessmentLink: string;
   taken: boolean;
@@ -220,4 +220,69 @@ export interface Application {
 }
 export interface ApplicationsResponse {
   applications: Application[];
+}
+
+interface Candidate {
+  id: string;
+  name?: string;
+  email?: string;
+}
+
+interface Job {
+  id: string;
+  title: string;
+}
+
+interface AssessmentParameters {
+  concept: number;
+  clarity: number;
+  accuracy: number;
+  knowledge: number;
+  codeQuality: number;
+  problemSolving: number;
+}
+
+interface AssessmentObservation {
+  summary: string;
+  keyStrengths: string[];
+  keyWeaknesses: string[];
+  nextSteps: string;
+  codeQualityFeedback: string;
+  problemSolvingFeedback: string;
+}
+
+interface Assessment {
+  assessmentCode: string;
+  totalScore: number;
+  parameters: AssessmentParameters;
+  observation: AssessmentObservation;
+}
+
+export interface AssessmentReportBase {
+  job: Job;
+  assessment: Assessment;
+  candidate: Candidate;
+}
+export interface AdminAssessmentReport extends AssessmentReportBase {
+  rank: number;
+}
+
+export interface EvaluatedAssessmentAPIResponse {
+  success: boolean;
+  message: string;
+  data?: AssessmentReportBase[];
+}
+
+export interface EvaluatedAssessmentAPIResponseAdmin {
+  success: boolean;
+  message: string;
+  data?: AdminAssessmentReport[];
+}
+
+export type AdminAssessmentResponse = EvaluatedAssessmentAPIResponseAdmin;
+export type CandidateAssessmentResponse = EvaluatedAssessmentAPIResponse;
+
+export interface StartAssessmentEvaluationResponse {
+  sucess: boolean;
+  message: string;
 }

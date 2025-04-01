@@ -61,7 +61,7 @@ const JobCard: React.FC<JobCardProps> = ({ jobsData, handleRefreshData }) => {
               <p className="text-gray-500 text-sm font-medium tracking-wide">
                 {jobsData.team}
               </p>
-              <h2 className="text-gray-900 font-extrabold text-xl mt-1">
+              <h2 className="text-gray-900 font-bold text-xl mt-1">
                 {jobsData.title}
               </h2>
               <p className="text-gray-500 text-xs">
@@ -84,13 +84,13 @@ const JobCard: React.FC<JobCardProps> = ({ jobsData, handleRefreshData }) => {
             </div>
             <div className="w-[300px] mt-5 absolute bottom-3 flex justify-around">
               <button
-                className="w-[140px] bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-500 transition"
+                className="w-[140px] bg-[#5E17EB] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-500 transition"
                 onClick={handleOnClick}
               >
                 View Details
               </button>
               <button
-                className="w-[140px] bg-purple-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-purple-400 transition"
+                className="w-[140px] bg-[#000] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-purple-400 transition"
                 onClick={() => handleJobApply(jobsData._id)}
                 disabled={isLoading}
               >
