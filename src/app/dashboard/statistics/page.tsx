@@ -26,6 +26,7 @@ const Statistics = () => {
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.auth.token);
   const apiRef = useRef<boolean>(false);
+  const gridRef = useRef<AgGridReact>(null);
   const [selectedRow, setSelectedRow] = useState<AdminAssessmentReport | null>(
     null
   );
@@ -44,16 +45,39 @@ const Statistics = () => {
       width: 100,
       sortable: true,
       sort: "asc",
+      sortingOrder: ["asc", "desc"],
     },
-    { field: "candidate.name", headerName: "Candidate Name" },
-    { field: "candidate.email", headerName: "Candidate Email" },
-    { field: "job.title", headerName: "Job Title" },
+    { field: "candidate.name", headerName: "Candidate Name", sortable: false },
+    {
+      field: "candidate.email",
+      headerName: "Candidate Email",
+      sortable: false,
+    },
+    { field: "job.title", headerName: "Job Title", sortable: false },
     {
       field: "assessment.assessmentCode",
       headerName: "Assessment Code",
       width: 150,
+      sortable: false,
     },
-    { field: "assessment.totalScore", headerName: "Total Score", width: 120 },
+    {
+      field: "assessment.totalScore",
+      headerName: "Total Score",
+      width: 120,
+      sortable: false,
+    },
+    {
+      field: "assessment.parameters.codeQuality",
+      headerName: "Code Quality",
+      width: 120,
+      sortable: false,
+    },
+    {
+      field: "assessment.parameters.problemSolving",
+      headerName: "Problem Solving",
+      width: 120,
+      sortable: false,
+    },
   ]);
 
   const fetchEvaluatedAssessments = async () => {
@@ -177,14 +201,17 @@ const Statistics = () => {
                 </button>
               </div>
             </div>
-            <div className="ag-theme-alpine" style={{ width: "100%" }}>
+            <div
+              className="ag-theme-alpine"
+              style={{ height: "37vh", width: "100%" }}
+            >
               <AgGridReact
+                ref={gridRef}
                 rowData={groupedData[jobTitle]}
                 columnDefs={colDefs}
                 pagination={true}
                 paginationPageSize={5}
                 suppressPaginationPanel={false}
-                domLayout="autoHeight"
                 onSelectionChanged={handleRowSelection}
                 rowSelection={"single"}
               />

@@ -149,7 +149,7 @@ export const startAssessmentEvaluation = async (
 ): Promise<StartAssessmentEvaluationResponse> => {
   try {
     const response = await axios.post(
-      `${API_URL}/v1/assessment/generate-report`,
+      `${API_URL}/v1/assessment/start-evaluation`,
       {},
       {
         headers: {

@@ -25,13 +25,13 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
   console.log("SpeechRecognitionComponent mounted");
   console.log("Listening:", listening);
   console.log("Transcript:", transcript);
-
+  
   useEffect(() => {
-    if (listening) {
+    if (transcript && transcript !== inputText.trim()) {
       setInputText((prevText) => prevText + " " + transcript);
       onTranscriptChange(transcript);
     }
-  }, [transcript, listening, onTranscriptChange]);
+  }, [transcript, onTranscriptChange]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);

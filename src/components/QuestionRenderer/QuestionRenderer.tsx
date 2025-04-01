@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CodeEditor from "../CodeEidtor/CodeEditor";
 import SpeechRecognitionComponent from "../SpeechRecognition/SpeechRecognition";
 import { QuestionRendererProps } from "@/utils/Types";
@@ -34,10 +34,9 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       Cookies.get("assessmentValidationToken")) ??
     null;
 
-  const handleTranscriptChange = (newTranscript: string) => {
+  const handleTranscriptChange = useCallback((newTranscript: string) => {
     setTranscript(newTranscript);
-    console.log(newTranscript);
-  };
+  }, []);
 
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -207,7 +206,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
             {isLoading ? (
               <Spin
                 indicator={<LoadingOutlined style={{ color: "white" }} spin />}
-                size="large"
+                size="default"
               />
             ) : question.index < 9 ? (
               "Next Question"

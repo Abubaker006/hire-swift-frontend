@@ -176,7 +176,8 @@ export const applyForJobPosting = async (
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw error;
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      throw new Error(errorMessage);
     }
     throw new Error("An unexpected error occurred");
   }
