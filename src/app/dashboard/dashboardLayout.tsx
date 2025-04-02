@@ -17,7 +17,7 @@ import LoaderImage from "../../../public/assets/loader/hire swift .gif";
 import LocationComponent from "@/components/LocationComponent/location";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-
+import Loader from "@/utils/loader";
 const DashbaordLayoutWrapper = ({
   children,
 }: {
@@ -31,7 +31,11 @@ const DashbaordLayoutWrapper = ({
         </div>
       }
     >
-      <DashboardContent>{children}</DashboardContent>
+      <DashboardContent>
+        {" "}
+        <Loader />
+        {children}
+      </DashboardContent>
     </Suspense>
   );
 };

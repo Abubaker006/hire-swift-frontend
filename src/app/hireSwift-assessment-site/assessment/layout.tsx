@@ -17,10 +17,10 @@ const AssessmentLayoutPage = ({ children }: { children: React.ReactNode }) => {
   const assessmentToken: string | null =
     tokenFromUrl ?? tokenFromCookie ?? null;
 
-
   return (
     <Suspense fallback={<Loader />}>
       <AssessmentContent assessmentToken={assessmentToken}>
+        <Loader />
         {children}
       </AssessmentContent>
     </Suspense>
