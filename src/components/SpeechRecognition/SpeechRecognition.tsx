@@ -22,27 +22,23 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
 
   const [inputText, setInputText] = useState("");
 
-  console.log("SpeechRecognitionComponent mounted");
-  console.log("Listening:", listening);
-  console.log("Transcript:", transcript);
-  
   useEffect(() => {
-    if (transcript && transcript !== inputText.trim()) {
-      setInputText((prevText) => prevText + " " + transcript);
+    if (transcript) {
+      setInputText(transcript);
       onTranscriptChange(transcript);
     }
-  }, [transcript, onTranscriptChange]);
+  }, [transcript]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
-    onTranscriptChange(e.target.value); // Ensure parent gets the typed input
+    onTranscriptChange(e.target.value);
   };
 
   const toggleListening = () => {
     if (listening) {
       SpeechRecognition.stopListening();
     } else {
-      SpeechRecognition.startListening({ continuous: true });
+      SpeechRecognition.startListening({ continuous: true, language: "en-US" });
     }
   };
 

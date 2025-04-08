@@ -295,7 +295,7 @@ const AssessmentPortal = () => {
       window.removeEventListener("resize", checkMinimized);
       checkMultipleDisplays();
     };
-  }, []);
+  }, [isValidatedToStart]);
 
   useEffect(() => {
     if (isAlertActive.current) return;
