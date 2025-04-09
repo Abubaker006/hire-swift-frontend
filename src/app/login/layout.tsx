@@ -10,8 +10,7 @@ export default function LoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+      <div>
         {children}
         <ToastContainer
           position="top-right" 
@@ -27,7 +26,6 @@ export default function LoginLayout({
             "w-[400px] md:w-[500px] bg-white shadow-lg rounded-lg p-4 text-black flex flex-row"
           }
         />
-      </body>
-    </html>
+      </div>
   );
 }
