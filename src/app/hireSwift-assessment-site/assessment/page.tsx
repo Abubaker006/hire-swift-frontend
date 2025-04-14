@@ -1,6 +1,6 @@
 "use client";
 import { AppDispatch, RootState } from "@/hooks/redux/store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Timer from "@/utils/Timer";
 import { hideLoader, showLoader } from "@/hooks/slices/loaderSlice";
@@ -18,6 +18,8 @@ import { Question, AssessmentQuestion } from "@/utils/Types";
 import Loader from "@/utils/loader";
 import axios, { AxiosError } from "axios";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import ExtractFaceData from "@/components/FaceVerification/ExtractFaceData";
+import VerifyFaceData from "@/components/FaceVerification/VerifyFaceData";
 
 const AssessmentPortal = () => {
   const router = useRouter();
@@ -46,6 +48,8 @@ const AssessmentPortal = () => {
     useState<string>("Warning");
   const isAlertActive = useRef<boolean>(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState<boolean>(false);
+  const [isAssessmentAllowed, setIsAssessmentAllowed] =
+    useState<boolean>(false);
 
   const getStoredTime = () => {
     const storedTime = localStorage.getItem("scheduledDateTime");
@@ -92,11 +96,22 @@ const AssessmentPortal = () => {
     } catch (error) {
       setIsValidatedToStart(false);
       setCanStartAssessment(true);
-      console.error("Error occured while applying for the job.", error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message?: string }>;
+        const statusCode = axiosError.response?.status;
+        console.log(statusCode);
+        const errorMessage =
+          axiosError.response?.data?.message || "Assessment validation failed";
+
+        if (statusCode === 401) {
+          toast.error("Your assessment has expired.");
+          router.push("/hireSwift-assessment-site/invalid-assessment");
+        } else if (statusCode === 403) {
+          toast.error("You don't have permission to access this assessment.");
+          router.push("/hireSwift-assessment-site/assessment-missed");
+        } else {
+          toast.error(errorMessage);
+        }
       }
     }
   };
@@ -137,6 +152,7 @@ const AssessmentPortal = () => {
     try {
       console.log("Validating Assessment.");
       handleAssessmentValidation();
+      setHasStartedAllowed(true);
     } catch (error) {
       console.error("Error while starting the assessment", error);
     }
@@ -309,6 +325,25 @@ const AssessmentPortal = () => {
     }
   }, [warningCount]);
 
+  const handleIsAssessmntAllowed = (value: boolean) => {
+    setIsAssessmentAllowed(value);
+    localStorage.setItem("isAllowed", "true");
+  };
+
+  const [hasStartedAllowed, setHasStartedAllowed] = useState(true);
+
+  useEffect(() => {
+    const isAllowed = localStorage.getItem("isAllowed");
+    if (isAllowed === "true") {
+      setHasStartedAllowed(true);
+    }
+  }, [hasStartedAllowed]);
+
+  const shouldRenderVerifyFaceData = useMemo(
+    () => hasStartedAllowed && isValidatedToStart && !canStartAssessment,
+    [hasStartedAllowed, isValidatedToStart, canStartAssessment]
+  );
+
   if (isLoading) {
     return <Loader />;
   }
@@ -330,23 +365,29 @@ const AssessmentPortal = () => {
 
         {canStartAssessment && !isValidatedToStart && (
           <>
-            <div className="relative w-full min-h-screen inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-black via-black to-[#5E17EB] text-white">
+            <div className="relative w-full min-h-screen inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-black via-black to-[#5E17EB] text-white py-6">
               <h1 className="text-xl md:text-xl font-semibold mb-4 text-center">
                 Press start to begin your assessment.
               </h1>
               <p className="text-sm">
                 {formatScheduledTime(targetTime.toString())}
               </p>
-              <div className="mt-5">
-                <button
-                  onClick={handleCanStartAssessment}
-                  className="px-[50px] py-2 rounded-lg bg-gradient-to-r from-purple-600 to-[#5E17EB] text-white font-semibold shadow-lg 
+              {isAssessmentAllowed ? (
+                <div className="mt-5">
+                  <button
+                    onClick={handleCanStartAssessment}
+                    className="px-[50px] py-2 rounded-lg bg-gradient-to-r from-purple-600 to-[#5E17EB] text-white font-semibold shadow-lg 
         transition-all duration-300 transform active:scale-95 
         hover:from-[#7c3ef7] hover:to-[#4c1d95] hover:shadow-purple-500/50"
-                >
-                  Start
-                </button>
-              </div>
+                  >
+                    Start
+                  </button>
+                </div>
+              ) : (
+                <ExtractFaceData
+                  handleIsAssessmentAllowed={handleIsAssessmntAllowed}
+                />
+              )}
             </div>
           </>
         )}
@@ -363,6 +404,7 @@ const AssessmentPortal = () => {
             </div>
           </>
         )}
+        {shouldRenderVerifyFaceData && <VerifyFaceData />}
       </div>
       {isAlertDialogOpen && (
         <AlertDialog.Root
