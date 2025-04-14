@@ -46,7 +46,6 @@ const ExtractFaceData: React.FC<ExtractFaceDataProps> = ({
 
   const loadModels = async (): Promise<void> => {
     try {
-      console.log("Model loading from ", MODELS_URL);
       if (!MODELS_URL) return;
 
       await Promise.all([

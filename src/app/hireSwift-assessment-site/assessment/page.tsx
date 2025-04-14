@@ -178,9 +178,7 @@ const AssessmentPortal = () => {
 
         setIsValidatedToStart(true);
         setCanStartAssessment(false);
-        console.log("reponse on refresh", response);
         if (questionsArray.length > 0) {
-          console.log("Found questions", response.questions);
           setQuestions(questionsArray);
           setAssessentTime(response.totalTime ?? 0);
         } else if (

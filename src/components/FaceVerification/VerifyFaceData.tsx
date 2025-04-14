@@ -31,7 +31,6 @@ const VerifyFaceData = () => {
 
   const loadModels = async (): Promise<void> => {
     try {
-      console.log("Model loading from ", MODELS_URL);
       if (!MODELS_URL) return;
 
       await Promise.all([
@@ -68,11 +67,12 @@ const VerifyFaceData = () => {
           facingMode: "user",
         },
       });
+      setIsCameraAvailable(true);
+
       videoRef.current.srcObject = stream;
       videoRef.current.onloadedmetadata = () => {
         videoRef.current?.play();
       };
-      setIsCameraAvailable(true);
 
       toast.info("Webcam active. Stay focused on assessment.");
     } catch (error) {
@@ -192,46 +192,31 @@ const VerifyFaceData = () => {
     }
   }, [isModelsLoaded]);
 
-  // useEffect(() => {
-  //   if (!isModelsLoaded || !isCameraAvaiable) return;
-
-  //   console.log("Starting check");
-  //   const totalDuration = 40 * 60 * 1000;
-
-  //   const randomChecks = Math.floor(Math.random() * 3) + 3;
-
-  //   const timeouts: NodeJS.Timeout[] = [];
-
-  //   for (let i = 0; i < randomChecks; i++) {
-  //     const randomTime =
-  //       ((i + 1) / (randomChecks + 1)) * totalDuration + Math.random() * 10000;
-  //     const timeout = setTimeout(() => {
-  //       console.log(`Running spaced random check #${i + 1}`);
-  //       verifyFace();
-  //     }, randomTime);
-  //     timeouts.push(timeout);
-  //   }
-
-  //   return () => {
-  //     timeouts.forEach(clearTimeout);
-  //   };
-  // }, [isModelsLoaded, isCameraAvaiable]);
   useEffect(() => {
-    if (!isModelsLoaded || !isCameraAvaiable) return;
+    if (!isModelsLoaded || !isCameraAvaiable) {
+      console.log("Check skipped: ", { isModelsLoaded, isCameraAvaiable });
+      return;
+    }
 
-    console.log("Starting check");
-    const totalDuration = 5000; // 5 seconds for testing
-    const randomChecks = Math.floor(Math.random() * 3) + 3; // 3 to 5 checks
+    console.log("Starting face verification checks");
+    const totalDuration = 2 * 60 * 1000;
+    const randomChecks = Math.floor(Math.random() * 3) + 3;
     const timeouts: NodeJS.Timeout[] = [];
 
+    console.log("Scheduling immediate face verification");
+    verifyFace();
+
     for (let i = 0; i < randomChecks; i++) {
-      // Spread checks evenly over 5 seconds, with a small random offset
       const randomTime =
-        ((i + 1) / (randomChecks + 1)) * totalDuration + Math.random() * 500;
-      console.log(`Scheduling check #${i + 1} at ${randomTime}ms`);
+        ((i + 1) / (randomChecks + 1)) * totalDuration + Math.random() * 5000;
+      console.log(
+        `Scheduling check #${i + 1} in ${(randomTime / 1000).toFixed(
+          2
+        )} seconds`
+      );
       const timeout = setTimeout(() => {
         console.log(`Running spaced random check #${i + 1}`);
-        verifyFace();
+        verifyFaceWithRetry();
       }, randomTime);
       timeouts.push(timeout);
     }
@@ -241,6 +226,24 @@ const VerifyFaceData = () => {
       timeouts.forEach(clearTimeout);
     };
   }, [isModelsLoaded, isCameraAvaiable]);
+
+  const verifyFaceWithRetry = async (retries = 2, delay = 2000) => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        console.log(`Attempt ${attempt} to verify face`);
+        await verifyFace();
+        return;
+      } catch (error) {
+        console.error(`Verify face attempt ${attempt} failed:`, error);
+        if (attempt < retries) {
+          console.log(`Retrying in ${delay / 1000} seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+    console.log("All retry attempts failed");
+    toast.error("Face verification failed after retries. Please try again.");
+  };
 
   const getFacialData = async () => {
     try {
