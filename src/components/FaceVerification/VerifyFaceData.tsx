@@ -90,7 +90,8 @@ const VerifyFaceData = () => {
     try {
       const response = await postViolations(token, message);
       console.log(response);
-      if (response.status === 201 && response.isTampered) {
+      if (response.isTampered) {
+        console.log("Routing");
         router.replace("/hireSwift-assessment-site/disqualified");
       }
     } catch (error) {

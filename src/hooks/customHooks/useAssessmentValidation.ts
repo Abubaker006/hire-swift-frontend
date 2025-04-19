@@ -37,6 +37,9 @@ const useAssessmentValidation = ({
         console.log("This code was also");
         router.replace("/hireSwift-assessment-site/assessment-missed");
         return;
+      } else if (status === "assessment_failed") {
+        router.replace("/hireSwift-assessment-site/disqualified");
+        return;
       }
       if (status === "assessment_started") {
         localStorage.setItem("canResume", "true");
