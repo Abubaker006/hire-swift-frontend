@@ -105,10 +105,10 @@ const AssessmentPortal = () => {
 
         if (statusCode === 401) {
           toast.error("Your assessment has expired.");
-          router.push("/hireSwift-assessment-site/invalid-assessment");
+          router.replace("/hireSwift-assessment-site/invalid-assessment");
         } else if (statusCode === 403) {
           toast.error("You don't have permission to access this assessment.");
-          router.push("/hireSwift-assessment-site/assessment-missed");
+          router.replace("/hireSwift-assessment-site/assessment-missed");
         } else {
           toast.error(errorMessage);
         }
@@ -118,7 +118,7 @@ const AssessmentPortal = () => {
 
   const handleAssessmentValidation = async () => {
     if (!token) {
-      router.push("/hireSwift-assessment-site/assessment-missed");
+      router.replace("/hireSwift-assessment-site/assessment-missed");
       return;
     }
     try {
@@ -137,10 +137,10 @@ const AssessmentPortal = () => {
 
         if (statusCode === 401) {
           toast.error("Your assessment has expired.");
-          router.push("/hireSwift-assessment-site/invalid-assessment");
+          router.replace("/hireSwift-assessment-site/invalid-assessment");
         } else if (statusCode === 403) {
           toast.error("You don't have permission to access this assessment.");
-          router.push("/hireSwift-assessment-site/assessment-missed");
+          router.replace("/hireSwift-assessment-site/assessment-missed");
         } else {
           toast.error(errorMessage);
         }
@@ -164,7 +164,7 @@ const AssessmentPortal = () => {
 
   const handleAssessmentValidationOnRefresh = async () => {
     if (!token) {
-      router.push("/hireSwift-assessment-site/assessment-missed");
+      router.replace("/hireSwift-assessment-site/assessment-missed");
       return;
     }
     try {
@@ -188,7 +188,7 @@ const AssessmentPortal = () => {
           setCanStartAssessment(true);
           setIsValidatedToStart(false);
         } else if (questionsArray.length <= 0) {
-          router.push("/hireSwift-assessment-site/assessment-submitted");
+          router.replace("/hireSwift-assessment-site/assessment-submitted");
         }
       }
     } catch (error) {
@@ -217,7 +217,7 @@ const AssessmentPortal = () => {
       try {
         const response = await startAssessmentEvaluation(token);
         if (response) {
-          router.push("/hireSwift-assessment-site/assessment-submitted");
+          router.replace("/hireSwift-assessment-site/assessment-submitted");
         }
       } catch (error) {
         await startAssessmentEvaluation(token); //just in case the api fails we make the call again

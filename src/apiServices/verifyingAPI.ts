@@ -9,6 +9,7 @@ interface VerificationAPIResponse {
   status?: number;
   message: string;
   descriptor?: number[];
+  isTampered?: boolean;
 }
 
 export const postFaceDescription = async (
@@ -39,7 +40,7 @@ export const postFaceDescription = async (
 };
 
 export const postViolations = async (
-  token: string,
+  token: string | null,
   reason: string
 ): Promise<VerificationAPIResponse> => {
   try {

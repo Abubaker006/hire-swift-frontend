@@ -35,7 +35,7 @@ const useAssessmentValidation = ({
 
       if (status === "assessment_taken" || status === "assessment_missed") {
         console.log("This code was also");
-        router.push("/hireSwift-assessment-site/assessment-missed");
+        router.replace("/hireSwift-assessment-site/assessment-missed");
         return;
       }
       if (status === "assessment_started") {
@@ -99,7 +99,7 @@ const useAssessmentValidation = ({
           router.push("/hireSwift-assessment-site/invalid-assessment");
         } else if (statusCode === 403) {
           toast.error("You don't have permission to access this assessment.");
-          router.push("/hireSwift-assessment-site/assessment-missed");
+          router.replace("/hireSwift-assessment-site/assessment-missed");
         } else {
           toast.error(errorMessage);
         }
@@ -142,7 +142,7 @@ const useAssessmentValidation = ({
     if (assessmentToken) {
       handleAssessmentValidation();
     } else if (!assessmentToken) {
-      router.push("/hireSwift-assessment-site/assessment-missed");
+      router.replace("/hireSwift-assessment-site/assessment-missed");
       setData({
         isLoading: false,
         isValid: false,

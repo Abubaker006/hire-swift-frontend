@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "@/hooks/redux/store";
 import Cookies from "js-cookie";
+import { postViolations } from "@/apiServices/verifyingAPI";
+import { useRouter } from "next/navigation";
 
 export interface VerificationResult {
   isMatch: boolean;
@@ -28,6 +30,7 @@ const VerifyFaceData = () => {
     (useSelector((state: RootState) => state.assessment.token) ||
       Cookies.get("assessmentValidationToken")) ??
     null;
+  const router = useRouter();
 
   const loadModels = async (): Promise<void> => {
     try {
@@ -83,6 +86,18 @@ const VerifyFaceData = () => {
     }
   };
 
+  const postViolationHelper = async (message: string) => {
+    try {
+      const response = await postViolations(token, message);
+      console.log(response);
+      if (response.status === 201 && response.isTampered) {
+        router.replace("/hireSwift-assessment-site/disqualified");
+      }
+    } catch (error) {
+      console.error("Error at posting a violation", error);
+    }
+  };
+
   const verifyFace = async () => {
     if (!videoRef.current || !isModelsLoaded || !fetchedData) {
       console.log("data not found");
@@ -103,10 +118,27 @@ const VerifyFaceData = () => {
           isMatch: false,
           message: "No face detected for verification.",
         });
+        try {
+          postViolationHelper("None Giving Assessment");
+        } catch (error) {
+          console.error(
+            "Error at posting when multiple faces detected.",
+            error
+          );
+        }
         return;
       }
 
       if (detections.length > 1) {
+        console.log("Detected Multiple Faces");
+        try {
+          postViolationHelper("Multiple Faces Detected");
+        } catch (error) {
+          console.error(
+            "Error at posting when multiple faces detected.",
+            error
+          );
+        }
         setVerificationResult({
           isMatch: false,
           message:
@@ -125,6 +157,14 @@ const VerifyFaceData = () => {
           isMatch: false,
           message: "Please look directly at the screen for verification.",
         });
+        try {
+          postViolationHelper("Candidates isnt focused.");
+        } catch (error) {
+          console.error(
+            "Error at posting when multiple faces detected.",
+            error
+          );
+        }
 
         toast.info("Please stay focused.");
         return;
@@ -138,6 +178,17 @@ const VerifyFaceData = () => {
       const threshold = 0.6;
       const isMatch = distance < threshold;
       const confidence = Math.round((1 - distance) * 100);
+
+      if (!isMatch) {
+        await postViolations(token, "The candidate isn't the same");
+        setVerificationResult({
+          isMatch,
+          distance,
+          confidence,
+          message: `Different person detected. (${confidence}% similarity)`,
+        });
+        return;
+      }
 
       setVerificationResult({
         isMatch,
@@ -193,38 +244,22 @@ const VerifyFaceData = () => {
   }, [isModelsLoaded]);
 
   useEffect(() => {
-    if (!isModelsLoaded || !isCameraAvaiable) {
-      console.log("Check skipped: ", { isModelsLoaded, isCameraAvaiable });
-      return;
-    }
+    if (!isModelsLoaded || !isCameraAvaiable) return;
 
-    console.log("Starting face verification checks");
-    const totalDuration = 2 * 60 * 1000;
-    const randomChecks = Math.floor(Math.random() * 3) + 3;
-    const timeouts: NodeJS.Timeout[] = [];
+    console.log("Verification in progress");
+    const randomInterval = () => Math.floor(Math.random() * 15000) + 10000;
+    let intervalId: NodeJS.Timeout;
 
-    console.log("Scheduling immediate face verification");
-    verifyFace();
-
-    for (let i = 0; i < randomChecks; i++) {
-      const randomTime =
-        ((i + 1) / (randomChecks + 1)) * totalDuration + Math.random() * 5000;
-      console.log(
-        `Scheduling check #${i + 1} in ${(randomTime / 1000).toFixed(
-          2
-        )} seconds`
-      );
-      const timeout = setTimeout(() => {
-        console.log(`Running spaced random check #${i + 1}`);
-        verifyFaceWithRetry();
-      }, randomTime);
-      timeouts.push(timeout);
-    }
-
-    return () => {
-      console.log("Cleaning up timeouts");
-      timeouts.forEach(clearTimeout);
+    const scheduleVerification = () => {
+      intervalId = setTimeout(async () => {
+        await verifyFaceWithRetry();
+        scheduleVerification();
+      }, randomInterval());
     };
+
+    scheduleVerification();
+
+    return () => clearTimeout(intervalId);
   }, [isModelsLoaded, isCameraAvaiable]);
 
   const verifyFaceWithRetry = async (retries = 2, delay = 2000) => {
@@ -241,8 +276,13 @@ const VerifyFaceData = () => {
         }
       }
     }
+
     console.log("All retry attempts failed");
-    toast.error("Face verification failed after retries. Please try again.");
+    toast.error("We were unable to verify you. Please adjust yourself.");
+    await postViolations(
+      token,
+      "No face detected after multiple verification attempts."
+    );
   };
 
   const getFacialData = async () => {
