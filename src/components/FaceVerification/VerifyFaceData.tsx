@@ -86,12 +86,21 @@ const VerifyFaceData = () => {
     }
   };
 
+  const stopCamera = () => {
+    const stream = document.querySelector("video")?.srcObject as MediaStream;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+  };
+
+
   const postViolationHelper = async (message: string) => {
     try {
       const response = await postViolations(token, message);
       console.log(response);
       if (response.isTampered) {
         console.log("Routing");
+        stopCamera();
         router.replace("/hireSwift-assessment-site/disqualified");
       }
     } catch (error) {
