@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_MODEL_URL: process.env.NEXT_PUBLIC_MODEL_URL,
   },
   images: {
-    domains: ["www.vecteezy.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.vecteezy.com",
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

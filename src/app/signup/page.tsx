@@ -5,7 +5,7 @@ import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { FormikHelpers, Formik, Form } from "formik";
 import { signUpPageValidationSchema } from "@/utils/schema";
-import LogoImage from "../../../public/assets/logo/hire-swift-white.svg";
+import LogoImage from "../../../public/assets/Logo/hire-swift-white.svg";
 import Link from "next/link";
 import CustomInput from "@/components/Inputs/customInput";
 import CustomSelect from "@/components/Inputs/customSelect";

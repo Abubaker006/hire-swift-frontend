@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import LogoImage from "../../../public/assets/logo/hire-swift-white.svg";
+import LogoImage from "../../../public/assets/Logo/hire-swift-white.svg";
 import Image from "next/image";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
