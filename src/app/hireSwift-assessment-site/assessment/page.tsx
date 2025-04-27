@@ -12,6 +12,7 @@ import {
 } from "@/apiServices/AssessmentAPI";
 import Cookies from "js-cookie";
 import { validateAssessment } from "@/apiServices/AssessmentAPI";
+import { postViolations } from "@/apiServices/verifyingAPI";
 import { useRouter } from "next/navigation";
 import QuestionRenderer from "@/components/QuestionRenderer/QuestionRenderer";
 import { Question, AssessmentQuestion } from "@/utils/Types";
@@ -50,6 +51,8 @@ const AssessmentPortal = () => {
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState<boolean>(false);
   const [isAssessmentAllowed, setIsAssessmentAllowed] =
     useState<boolean>(false);
+
+  const [hasStartedAllowed, setHasStartedAllowed] = useState(true);
 
   const getStoredTime = () => {
     const storedTime = localStorage.getItem("scheduledDateTime");
@@ -311,24 +314,42 @@ const AssessmentPortal = () => {
     };
   }, [isValidatedToStart]);
 
-  useEffect(() => {
-    if (isAlertActive.current) return;
-
-    if (warningCount >= 3) {
-      console.log("Test submission due to repeated violations.");
-      //make api call that assessment is submitted but tampered.
-    } else if (warningCount > 0) {
-      isAlertActive.current = true;
-      setIsAlertDialogOpen(true);
-    }
-  }, [warningCount]);
-
   const handleIsAssessmntAllowed = (value: boolean) => {
     setIsAssessmentAllowed(value);
     localStorage.setItem("isAllowed", "true");
   };
 
-  const [hasStartedAllowed, setHasStartedAllowed] = useState(true);
+  const shouldRenderVerifyFaceData = useMemo(
+    () => hasStartedAllowed && isValidatedToStart && !canStartAssessment,
+    [hasStartedAllowed, isValidatedToStart, canStartAssessment]
+  );
+
+  const postViolationHelper = async (message: string) => {
+    try {
+      const response = await postViolations(token, message);
+      console.log(response);
+      if (response.isTampered) {
+        console.log("Routing");
+        router.replace("/hireSwift-assessment-site/disqualified");
+      }
+    } catch (error) {
+      console.error("Error at posting a violation", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAlertActive.current) return;
+
+    if (warningCount >= 3) {
+      postViolationHelper(
+        "Browser Api detected violation of tab, window shift."
+      );
+      console.log("Test submission due to repeated violations.");
+    } else if (warningCount > 0) {
+      isAlertActive.current = true;
+      setIsAlertDialogOpen(true);
+    }
+  }, [warningCount]);
 
   useEffect(() => {
     const isAllowed = localStorage.getItem("isAllowed");
@@ -336,11 +357,6 @@ const AssessmentPortal = () => {
       setHasStartedAllowed(true);
     }
   }, [hasStartedAllowed]);
-
-  const shouldRenderVerifyFaceData = useMemo(
-    () => hasStartedAllowed && isValidatedToStart && !canStartAssessment,
-    [hasStartedAllowed, isValidatedToStart, canStartAssessment]
-  );
 
   if (isLoading) {
     return <Loader />;
