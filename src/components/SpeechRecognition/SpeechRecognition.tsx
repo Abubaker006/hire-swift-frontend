@@ -42,14 +42,6 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
     }
   };
 
-  if (!browserSupportsSpeechRecognition) {
-    return (
-      <div className="text-red-500">
-        Sorry, your browser does not support speech recognition.
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-6 p-6 h-[96vh]  w-full mx-auto bg-[#121212]">
@@ -84,6 +76,12 @@ const SpeechRecognitionComponent: React.FC<SpeechRecognitionProps> = ({
         >
           Reset
         </button>
+        {!browserSupportsSpeechRecognition && (
+          <p className="text-yellow-400 font-medium text-center">
+            Your browser doesn&apos;t support speech recognition. You can still
+            type your input below.
+          </p>
+        )}
 
         <div className="relative w-full max-w-lg">
           <div className="flex items-center bg-[#1E1E1E] text-white rounded-lg shadow-md focus-within:ring-2 focus-within:ring-[#5E17EB] transition-all px-4 py-2">
