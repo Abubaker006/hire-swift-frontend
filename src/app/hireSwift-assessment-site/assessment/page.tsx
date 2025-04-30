@@ -216,19 +216,21 @@ const AssessmentPortal = () => {
       currentIndex === questions.length - 1 ||
       currentIndex >= questions.length - 1
     ) {
-      // here we call the evaluation api
       try {
+        dispatch(showLoader());
         const response = await startAssessmentEvaluation(token);
         if (response) {
           router.replace("/hireSwift-assessment-site/assessment-submitted");
         }
       } catch (error) {
-        await startAssessmentEvaluation(token); //just in case the api fails we make the call again
+        await startAssessmentEvaluation(token); //fallback mechanism.
         if (error instanceof Error) {
           console.error(error.message);
         } else {
           console.error("An unexpected error occurred.");
         }
+      } finally {
+        dispatch(hideLoader());
       }
     }
   };
