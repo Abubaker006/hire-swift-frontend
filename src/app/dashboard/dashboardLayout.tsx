@@ -92,7 +92,9 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen flex flex-col bg-[#fff] text-gray-900">
       <header className="sticky top-0 left-0 right-0 z-50 flex justify-between items-center bg-black text-white p-4 shadow-md">
         <div className="flex items-center gap-10">
-          <Image src={LogoImage} alt="Logo" width={100} height={100} />
+          <Link href="/dashboard">
+            <Image src={LogoImage} alt="Logo" width={100} height={100} />
+          </Link>
           <nav className="flex gap-5">
             {navLinks.map((link) => (
               <Link

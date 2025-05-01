@@ -39,7 +39,7 @@ const MyApplications = () => {
           console.log("Status Code:", statusCode);
 
           const errorMessage =
-            axiosError.response.data?.message || "Assessment validation failed";
+            axiosError.response.data?.message || "Assessment Fetching failed";
           toast.error(errorMessage);
         } else {
           toast.error("Server did not respond with an error message.");

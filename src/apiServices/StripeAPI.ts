@@ -1,10 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { ErrorResponse } from "@/utils/Types";
-
-interface CheckoutSessionResponse {
-  id: string;
-  url: string;
-}
+import { CheckoutSessionResponse, UpdateTokenAPIResponse } from "@/utils/Types";
 
 const stripeApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -22,7 +18,7 @@ export const createCheckoutSession = async (
     const response: AxiosResponse<CheckoutSessionResponse> =
       await stripeApi.post(
         "/v1/stripe/create-checkout-session",
-        { amount }, 
+        { amount },
         {
           headers: {
             "Content-Type": "application/json",
@@ -31,6 +27,42 @@ export const createCheckoutSession = async (
         }
       );
 
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Failed to validate assessment";
+      throw new Error(errorMessage);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : "An unexpected error occured."
+    );
+  }
+};
+
+export const updateTokens = async (
+  token: string | null,
+  amount: number,
+  userId: string
+): Promise<UpdateTokenAPIResponse> => {
+  try {
+    if (!userId || !amount || !token) {
+      throw new Error("Required parameters missing");
+    }
+    const response = await stripeApi.post(
+      `/v1/stripe/update-tokens`,
+      {
+        amount: amount,
+        userId: userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

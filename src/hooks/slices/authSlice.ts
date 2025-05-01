@@ -7,7 +7,8 @@ export interface AuthState {
     lastName: string;
     email: string;
     contactNumber: string;
-    role: string ;
+    role: string;
+    tokens: number;
   };
   token: string | null;
   loading: boolean;

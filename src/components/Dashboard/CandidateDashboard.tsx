@@ -1,23 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/hooks/redux/store";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { Formik, Form } from "formik";
 import CustomInput from "../Inputs/customInput";
-import CheckoutForm from "../Stripe/CheckoutForm";
 import { stipePaymentScehma } from "@/utils/schema";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+import { createCheckoutSession } from "@/apiServices/StripeAPI";
+import { toast } from "react-toastify";
 
 const CandidateDashboard = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [amount, setAmount] = useState<number>(1000);
+  const token = useSelector((state: RootState) => state.auth.token);
 
   return (
     <div className="min-h-screen  py-10 px-4">
@@ -34,14 +29,34 @@ const CandidateDashboard = () => {
 
         <div className="p-6 rounded-xl">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Make a Payment
+            Buy Tokens, your current tokens are {user?.tokens}
           </h2>
 
           <Formik
-            initialValues={{ amount: amount / 100 }}
+            initialValues={{ amount: 10 }}
             validationSchema={stipePaymentScehma}
-            onSubmit={(values) => {
-              setAmount(values.amount * 100);
+            onSubmit={async (values, actions) => {
+              try {
+                if (user?.tokens && user.tokens >= 500) {
+                  toast.info(
+                    "Your current tokens are more than enough please utilize them."
+                  );
+                  return;
+                }
+                const response = await createCheckoutSession(
+                  token,
+                  values.amount * 100
+                );
+                if (response?.url) {
+                  window.location.href = response.url;
+                }
+              } catch (error) {
+                console.error("Error at payment gateway init", error);
+                toast.error("Payment initiation failed");
+              }
+
+              actions.setSubmitting(false);
+              actions.resetForm();
             }}
           >
             {({ isSubmitting }) => (
@@ -65,18 +80,12 @@ const CandidateDashboard = () => {
                       size="large"
                     />
                   ) : (
-                    "Update Amount"
+                    "Pay Now"
                   )}
                 </button>
               </Form>
             )}
           </Formik>
-
-          <div className="mt-8">
-            <Elements stripe={stripePromise}>
-              <CheckoutForm amount={amount} />
-            </Elements>
-          </div>
         </div>
       </div>
     </div>
