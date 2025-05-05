@@ -8,7 +8,7 @@ const DisQualified = () => {
         <h1 className="text-5xl font-bold mb-6">Failure</h1>
         <h2 className="text-2xl font-semibold mb-4">Assessment Failed!</h2>
         <p className="text-gray-400 mb-6">
-          TYou have been disqualified from the assessment as your violated the procotring rules.
+          You have been disqualified from the assessment as your violated the procotring rules.
         </p>
         <Link
           href="/dashboard"

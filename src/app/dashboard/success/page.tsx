@@ -25,7 +25,7 @@ const SuccessPage = () => {
       const response = await updateTokens(token, amount, userId);
       console.log("Tokens updated!");
       toast.success(response.message || "Tokens updated successully");
-      router.replace("/dashboard");
+      window.location.href = "/dashboard"; //just a temp fix.
     } catch (error) {
       dispatch(hideLoader());
       apiRef.current = false;

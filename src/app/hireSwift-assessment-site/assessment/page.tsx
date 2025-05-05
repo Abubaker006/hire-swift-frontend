@@ -218,6 +218,7 @@ const AssessmentPortal = () => {
     ) {
       // here we call the evaluation api
       try {
+        dispatch(showLoader());
         const response = await startAssessmentEvaluation(token);
         if (response) {
           router.replace("/hireSwift-assessment-site/assessment-submitted");
@@ -229,6 +230,8 @@ const AssessmentPortal = () => {
         } else {
           console.error("An unexpected error occurred.");
         }
+      } finally {
+        dispatch(hideLoader());
       }
     }
   };

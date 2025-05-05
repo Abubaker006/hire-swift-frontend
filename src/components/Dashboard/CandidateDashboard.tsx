@@ -9,6 +9,7 @@ import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { createCheckoutSession } from "@/apiServices/StripeAPI";
 import { toast } from "react-toastify";
+import { Coins } from "lucide-react";
 
 const CandidateDashboard = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -28,8 +29,8 @@ const CandidateDashboard = () => {
         </div>
 
         <div className="p-6 rounded-xl">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Buy Tokens, your current tokens are {user?.tokens}
+          <h2 className="text-xl flex items-center font-semibold text-gray-700 mb-4">
+            Buy Tokens, your current tokens are {user?.tokens} <Coins className="ml-1 text-[#4A13C2]" size={24}/>
           </h2>
 
           <Formik
