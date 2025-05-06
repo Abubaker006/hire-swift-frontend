@@ -286,3 +286,12 @@ export interface StartAssessmentEvaluationResponse {
   sucess: boolean;
   message: string;
 }
+
+export interface CheckoutSessionResponse {
+  id: string;
+  url: string;
+}
+
+export interface UpdateTokenAPIResponse {
+  message: string;
+}

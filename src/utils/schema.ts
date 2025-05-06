@@ -71,3 +71,7 @@ export const JobPostFormValidationSchema = Yup.object().shape({
     .required("Number of candidates requried.")
     .min(1, "Required Candidates cannot be less than 1"),
 });
+
+export const stipePaymentScehma = Yup.object({
+  amount: Yup.number().min(1, "Minimum $1").required("Amount is required"),
+});
