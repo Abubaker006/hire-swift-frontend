@@ -65,9 +65,9 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex w-full items-center justify-center bg-black relative">
+    <div className="min-h-screen flex w-full items-center justify-center bg-gradient-to-br from-black via-black to-purple-900 relative">
       <BackButton route="/" />
-      <div className="w-1/2 bg-[#000] text-white flex flex-col items-center justify-center py-6 px-10 shadow-lg">
+      <div className="w-1/2  text-white flex flex-col items-center justify-center py-6 px-10">
         <Image src={LogoImage} alt="HireSwift Logo" width={170} height={75} />
         <h1 className="text-5xl font-bold mt-6 leading-tight text-center">
           Create an Account!
@@ -167,7 +167,7 @@ const SignUp = () => {
           className="text-white hover:text-white text-sm mt-5 transition duration-200"
         >
           Already have an account?{" "}
-          <span className="font-semibold underline text-[#5E17EB] hover:text-white transition-all duration-300">
+          <span className="font-semibold underline text-[#845ed2] text-md hover:text-white transition-all duration-300">
             Login
           </span>
         </Link>

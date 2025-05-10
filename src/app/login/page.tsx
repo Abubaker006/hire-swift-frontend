@@ -93,6 +93,7 @@ const Login = () => {
                   />
                 </div>
               </div>
+
               <button
                 type="submit"
                 className="w-1/2 bg-white text-black font-semibold py-4 rounded-lg hover:bg-[#5E17EB] active:bg-[#5E17EB] hover:text-[#fff] transition-all duration-200 shadow-md text-l"
@@ -115,13 +116,21 @@ const Login = () => {
 
         <Link
           href={"/signup"}
-          className="text-white hover:text-white text-sm mt-5 transition duration-200"
+          className="text-white hover:text-white text-sm mt-0 transition duration-200"
         >
           Don&apos;t have an account?{" "}
-          <span className="font-semibold underline text-[#5E17EB] hover:text-white transition-all duration-300">
+          <span className="font-semibold underline text-md text-[#845ed2] hover:text-white transition-all duration-300">
             Signup
           </span>
         </Link>
+        <div className="flex justify-end mt-3  text-center">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-[#845ed2] font-semibold hover:text-white transition-all duration-300"
+          >
+            Forgot Password?
+          </Link>
+        </div>
       </div>
 
       {/* Right Side */}

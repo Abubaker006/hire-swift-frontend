@@ -88,3 +88,80 @@ export const getUserAPI = async () => {
     throw error;
   }
 };
+
+interface PasswordResetAPIResponse {
+  message: string;
+  canContinue?: boolean;
+}
+
+export const forgotPassword = async (
+  email: string
+): Promise<PasswordResetAPIResponse> => {
+  try {
+    const response = await axios.post(
+      `${AUTH_API_URL}/auth/forgot-password`,
+      {
+        email,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error forgetting password", error);
+    throw error;
+  }
+};
+
+export const verifyResetToken = async (
+  email: string,
+  token: string | number
+): Promise<PasswordResetAPIResponse> => {
+  try {
+    const response = await axios.post(
+      `${AUTH_API_URL}/auth/verify-refresh-token`,
+      {
+        email,
+        token,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error  at verifying", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (
+  email: string,
+  token: string,
+  newPassword: string
+): Promise<PasswordResetAPIResponse> => {
+  try {
+    const response = await axios.post(
+      `${AUTH_API_URL}/auth/reset-password`,
+      {
+        email,
+        token,
+        newPassword,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error  at verifying", error);
+    throw error;
+  }
+};
