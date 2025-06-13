@@ -5,7 +5,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 interface ICustomInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   name: string;
-  isOnboarding: boolean;
+  isOnboarding?: boolean;
 }
 
 const CustomInput: FC<ICustomInputProps> = ({

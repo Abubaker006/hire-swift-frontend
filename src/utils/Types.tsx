@@ -295,3 +295,23 @@ export interface CheckoutSessionResponse {
 export interface UpdateTokenAPIResponse {
   message: string;
 }
+
+export type RecruiterVerificationData = {
+  companyEmail: string;
+  linkedInProfile: string;
+  registrationNumber: string;
+  jobPostingsURL: string;
+  websiteURL: string;
+  reviewsInfo: string;
+};
+
+export type SignupData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactNumber: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  recruiterVerification?: RecruiterVerificationData;
+};

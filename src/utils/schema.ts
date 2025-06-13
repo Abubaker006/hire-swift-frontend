@@ -94,3 +94,40 @@ export const resetPasswordSchema = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm password is required"),
 });
+
+export const recruiterValidationSchema = Yup.object().shape({
+  companyEmail: Yup.string()
+    .email("Must be a valid email address")
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Enter a valid company email address"
+    )
+    .required("Company email is required"),
+  linkedInProfile: Yup.string()
+    .url("Must be a valid URL")
+    .matches(
+      /^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9_-]+\/?$/,
+      "Must be a valid LinkedIn profile URL"
+    )
+    .required("LinkedIn profile URL is required"),
+  registrationNumber: Yup.string()
+    .matches(
+      /^[a-zA-Z0-9-]+$/,
+      "Registration number can only contain letters, numbers, and hyphens"
+    )
+    .min(5, "Registration number must be at least 5 characters")
+    .max(20, "Registration number cannot exceed 20 characters")
+    .required("Company registration number is required"),
+  jobPostingsURL: Yup.string().url("Must be a valid URL").optional().nullable(),
+  websiteURL: Yup.string()
+    .url("Must be a valid URL")
+    .matches(
+      /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/,
+      "Must be a valid website URL"
+    )
+    .required("Company website URL is required"),
+  reviewsInfo: Yup.string()
+    .min(10, "Reviews information must be at least 10 characters")
+    .max(500, "Reviews information cannot exceed 500 characters")
+    .required("Reviews information is required"),
+});
