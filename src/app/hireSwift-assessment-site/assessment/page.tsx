@@ -9,10 +9,12 @@ import { toast } from "react-toastify";
 import {
   startAssessment,
   startAssessmentEvaluation,
+  validateAssessment,
 } from "@/apiServices/AssessmentAPI";
 import Cookies from "js-cookie";
-import { validateAssessment } from "@/apiServices/AssessmentAPI";
+import { recordValidationReport } from "@/apiServices/blockchainServiceAPI";
 import { postViolations } from "@/apiServices/verifyingAPI";
+
 import { useRouter } from "next/navigation";
 import QuestionRenderer from "@/components/QuestionRenderer/QuestionRenderer";
 import { Question, AssessmentQuestion } from "@/utils/Types";
@@ -77,6 +79,7 @@ const AssessmentPortal = () => {
       localStorage.setItem("scheduledDateTime", date.toISOString());
       dispatch(hideLoader());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentData, message, token, scheduledDateTime, status]);
 
   const handleStartAssessment = async (canStart: boolean) => {
@@ -209,6 +212,28 @@ const AssessmentPortal = () => {
     }
   };
 
+  const recordAssessmentReportForValidation = async (
+    evaluatedAssessmentCode: string | undefined
+  ) => {
+    try {
+      if (!token || !evaluatedAssessmentCode) {
+        console.log(
+          "Couldnt record to blockchain, was missing required parameters"
+        );
+      }
+      const response = await recordValidationReport(
+        token,
+        evaluatedAssessmentCode
+      );
+      toast.success(response.message ?? "Assessment is stored to valdate.");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("An unexpected error occurred.");
+      }
+    }
+  };
   const handleNextQuestion = async () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
@@ -219,11 +244,15 @@ const AssessmentPortal = () => {
       try {
         dispatch(showLoader());
         const response = await startAssessmentEvaluation(token);
+        await recordAssessmentReportForValidation(
+          response.assessmentCode
+        );
+
         if (response) {
           router.replace("/hireSwift-assessment-site/assessment-submitted");
         }
       } catch (error) {
-        await startAssessmentEvaluation(token); //fallback mechanism.
+        await startAssessmentEvaluation(token); //fallback mechanism its temmporary will be implementing a QUEUE mechanism shortly at backend.
         if (error instanceof Error) {
           console.error(error.message);
         } else {
@@ -245,6 +274,7 @@ const AssessmentPortal = () => {
     } else {
       localStorage.setItem("canResume", "false");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAlertClose = () => {
@@ -343,14 +373,15 @@ const AssessmentPortal = () => {
     if (isAlertActive.current) return;
 
     if (warningCount >= 3) {
-      postViolationHelper(
-        "Browser Api detected violation of tab, window shift."
-      );
+      // postViolationHelper(
+      //   "Browser Api detected violation of tab, window shift."
+      // );
       console.log("Test submission due to repeated violations.");
     } else if (warningCount > 0) {
       isAlertActive.current = true;
       setIsAlertDialogOpen(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [warningCount]);
 
   useEffect(() => {

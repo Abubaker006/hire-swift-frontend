@@ -19,6 +19,7 @@ export interface AssessmentData {
   taken: boolean;
   passed?: boolean;
   overallScore: number | null;
+  assesmentCode?: string;
 }
 
 export interface BaseValidationResponse {
@@ -285,6 +286,7 @@ export type CandidateAssessmentResponse = EvaluatedAssessmentAPIResponse;
 export interface StartAssessmentEvaluationResponse {
   sucess: boolean;
   message: string;
+  assessmentCode?: string;
 }
 
 export interface CheckoutSessionResponse {
@@ -315,3 +317,10 @@ export type SignupData = {
   role: string;
   recruiterVerification?: RecruiterVerificationData;
 };
+
+export interface blockchainServiceAPIResponse {
+  message: string;
+  txHash?: string;
+  hash?: string;
+  isValid?: boolean;
+}

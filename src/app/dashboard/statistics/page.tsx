@@ -19,6 +19,7 @@ import { Download } from "lucide-react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { validateAssessmentRecord } from "@/apiServices/blockchainServiceAPI";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -38,6 +39,7 @@ const Statistics = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isValidating, setIsValidating] = useState<boolean>(false);
   const [colDefs] = useState<ColDef[]>([
     {
       field: "rank",
@@ -158,8 +160,34 @@ const Statistics = () => {
     }
   };
 
+  const handleValidateReport = async () => {
+    try {
+      setIsValidating(true);
+      if (selectedRow && selectedRow.assessment.assessmentCode) {
+        const response = await validateAssessmentRecord(
+          token,
+          selectedRow?.assessment?.assessmentCode
+        );
+        toast.success(response?.message ?? "Assessment Successully valdated");
+      } else {
+        toast.error("Please select a row to validate report.");
+        return;
+      }
+    } catch (error) {
+      setIsValidating(false);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   useEffect(() => {
     fetchEvaluatedAssessments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -174,6 +202,22 @@ const Statistics = () => {
                 {")"} {jobTitle}
               </h3>
               <div className="mx-2 mb-2">
+                <button
+                  onClick={handleValidateReport}
+                  className="w-auto px-4 py-2 mr-2 bg-[#5E17EB] hover:bg-purple-800 transition-all duration-300 text-white rounded"
+                  disabled={isValidating}
+                >
+                  {isValidating ? (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined style={{ color: "white" }} spin />
+                      }
+                      size="default"
+                    />
+                  ) : (
+                    <p className="mr-1 text-sm">Validate Report</p>
+                  )}
+                </button>
                 <button
                   onClick={handleDetails}
                   className="w-[120px] mr-2 px-4 py-2 text-sm bg-[#5E17EB] hover:bg-purple-800 transition-all duration-300 text-white rounded"
