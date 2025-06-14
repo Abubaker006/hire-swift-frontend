@@ -129,7 +129,8 @@ const VerifyFaceData = () => {
           message: "No face detected for verification.",
         });
         try {
-          postViolationHelper("None Giving Assessment");
+          // postViolationHelper("None Giving Assessment");
+          console.log("None giving assessment.");
         } catch (error) {
           console.error(
             "Error at posting when multiple faces detected.",
@@ -190,7 +191,7 @@ const VerifyFaceData = () => {
       const confidence = Math.round((1 - distance) * 100);
 
       if (!isMatch) {
-        await postViolations(token, "The candidate isn't the same");
+        // await postViolations(token, "The candidate isn't the same");
         setVerificationResult({
           isMatch,
           distance,
@@ -289,10 +290,10 @@ const VerifyFaceData = () => {
 
     console.log("All retry attempts failed");
     toast.error("We were unable to verify you. Please adjust yourself.");
-    await postViolations(
-      token,
-      "No face detected after multiple verification attempts."
-    );
+    // await postViolations(
+    //   token,
+    //   "No face detected after multiple verification attempts."
+    // );
   };
 
   const getFacialData = async () => {
