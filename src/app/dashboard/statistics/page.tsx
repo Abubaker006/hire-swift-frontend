@@ -15,11 +15,14 @@ import {
 } from "ag-grid-community";
 import GenericModal from "@/components/Modal/GenericModal";
 import { getAssessmentReport } from "@/apiServices/AssessmentAPI";
-import { Download } from "lucide-react";
+import { Download, CheckCircle, XCircle } from "lucide-react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { validateAssessmentRecord } from "@/apiServices/blockchainServiceAPI";
+import Image from "next/image";
+import SuccessImage from "../../../../public/assets/images/sucess-circle.svg";
+import FailureImage from "../../../../public/assets/images/failure-cirlce.svg";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -40,6 +43,14 @@ const Statistics = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<{
+    isModalOpen: boolean;
+    isResultValid: boolean;
+  }>({
+    isModalOpen: false,
+    isResultValid: false,
+  });
+
   const [colDefs] = useState<ColDef[]>([
     {
       field: "rank",
@@ -169,12 +180,14 @@ const Statistics = () => {
           selectedRow?.assessment?.assessmentCode
         );
         toast.success(response?.message ?? "Assessment Successully valdated");
+        setIsValid({ isModalOpen: true, isResultValid: true });
       } else {
         toast.error("Please select a row to validate report.");
         return;
       }
     } catch (error) {
       setIsValidating(false);
+      setIsValid({ isModalOpen: true, isResultValid: false });
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -357,6 +370,48 @@ const Statistics = () => {
             {modalData?.assessment.observation.nextSteps}
           </p>
         </div>
+      </GenericModal>
+
+      <GenericModal
+        open={isValid.isModalOpen}
+        onClose={() => setIsValid({ isModalOpen: false, isResultValid: false })}
+      >
+        {isValid.isResultValid ? (
+          <div className="text-center p-6 flex flex-col items-center gap-4">
+            <CheckCircle className="text-green-500 w-12 h-12" />
+            <h2 className="text-2xl font-semibold text-green-700">
+              Verification Successful
+            </h2>
+            <p className="text-gray-600">
+              Everything checks out. You may proceed with the next step.
+            </p>
+            <Image
+              src={SuccessImage}
+              alt="Success"
+              width={150}
+              height={150}
+              className="mt-4"
+            />
+          </div>
+        ) : (
+          <div className="text-center p-6 flex flex-col items-center gap-4">
+            <XCircle className="text-red-500 w-12 h-12" />
+            <h2 className="text-2xl font-semibold text-red-700">
+              Verification Failed
+            </h2>
+            <p className="text-gray-600">
+              The result could not be verified. Please try again or contact
+              support.
+            </p>
+            <Image
+              src={FailureImage}
+              alt="Failure"
+              width={150}
+              height={150}
+              className="mt-4"
+            />
+          </div>
+        )}
       </GenericModal>
     </>
   );
